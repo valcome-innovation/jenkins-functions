@@ -1,3 +1,3 @@
 # jenkins-functions
 
-This is a simple collections of helper functions we use in Jenkins
+This is a simple collections of helper functions we use with Jenkins.
