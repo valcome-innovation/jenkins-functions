@@ -9,7 +9,7 @@ def call(sshSecretId,
                     usernameVariable: 'user'
             )
     ]) {
-        return get_remote(
+        return getRemote(
                 host,
                 user,
                 passphrase,
