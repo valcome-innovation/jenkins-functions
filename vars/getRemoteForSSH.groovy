@@ -1,6 +1,8 @@
 def call(sshSecretId,
          host,
          allowAnyHosts) {
+    def remote
+
     withCredentials([
             sshUserPrivateKey(
                     credentialsId: "${sshSecretId}",
@@ -9,7 +11,7 @@ def call(sshSecretId,
                     usernameVariable: 'user'
             )
     ]) {
-        return getRemote(
+        remote = getRemote(
                 host,
                 user,
                 passphrase,
@@ -17,4 +19,6 @@ def call(sshSecretId,
                 allowAnyHosts
         )
     }
+
+    return remote
 }
