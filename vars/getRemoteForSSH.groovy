@@ -1,6 +1,6 @@
-static def call(sshSecretId,
-                host,
-                allowAnyHosts) {
+def call(sshSecretId,
+         host,
+         allowAnyHosts) {
     withCredentials([
             sshUserPrivateKey(
                     credentialsId: "${sshSecretId}",
