@@ -3,12 +3,17 @@ static def call(host,
                 passphrase,
                 identity,
                 allowAnyHosts) {
-    return [
+    def sshTarget = [
             name         : "SSH Target",
             host         : host,
             user         : user,
-            passphrase   : passphrase,
             identityFile : identity,
             allowAnyHosts: allowAnyHosts,
     ]
+
+    if (passphrase != null) {
+        sshTarget.passphrase = passphrase
+    }
+
+    return sshTarget
 }
