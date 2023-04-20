@@ -1,6 +1,6 @@
 def call(remote, env, value) {
     writeFile file: env,
-            text: value
+            text: '$value'
 
     sshPut remote: remote,
             from: env,
