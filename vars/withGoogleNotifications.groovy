@@ -1,6 +1,6 @@
 def call(envs = '', closure) {
     try {
-        closure().call()
+        closure()
 
         sendBuildMessage('', envs)
     } catch (exc) {
