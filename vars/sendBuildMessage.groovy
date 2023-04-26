@@ -1,4 +1,4 @@
-package google_chat
+
 
 def call(msg, envs) {
     def message = """
