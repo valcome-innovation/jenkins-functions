@@ -1,5 +1,5 @@
 def call(msg, envs) {
-    return """
+    def message = """
         *${env.JOB_BASE_NAME} #${env.BUILD_NUMBER}*
         ${currentBuild.currentResult}
         ${msg}
@@ -8,4 +8,6 @@ def call(msg, envs) {
 
         ${envs}
     """
+
+    notifyGoogleChat(message)
 }
