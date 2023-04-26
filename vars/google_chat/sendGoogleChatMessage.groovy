@@ -1,3 +1,5 @@
+package google_chat
+
 def call(message) {
     withCredentials([string(credentialsId: 'GOOGLE_CHAT_JENKINS_KEY', variable: 'SECRET_VALUE')]) {
         sh '''
