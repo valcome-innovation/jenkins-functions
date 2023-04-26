@@ -9,5 +9,5 @@ def call(msg, envs) {
         ${envs}
     """
 
-    notifyGoogleChat(message)
+    sendGoogleChatMessage(message)
 }
