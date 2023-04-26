@@ -1,6 +1,4 @@
-
-
-def call(msg, envs) {
+def call(msg, envs = '') {
     def message = """
         *${env.JOB_BASE_NAME} #${env.BUILD_NUMBER}*
         ${currentBuild.currentResult}
