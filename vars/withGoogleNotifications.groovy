@@ -1,5 +1,3 @@
-
-
 def call(envs = '', closure) {
     try {
         closure().call()
