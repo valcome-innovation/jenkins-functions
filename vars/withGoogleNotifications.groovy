@@ -1,10 +1,10 @@
 
 
-def call(closure) {
+def call(envs = '', closure) {
     try {
         closure().call()
 
-        sendBuildMessage('', '')
+        sendBuildMessage('', envs)
     } catch (exc) {
         handleBuildError(exc)
     }
