@@ -7,5 +7,5 @@ def call(remote,
 
     sshPut remote: remote,
             from: env,
-            into: env
+            into: target
 }
