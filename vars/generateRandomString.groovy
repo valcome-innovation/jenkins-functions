@@ -1,7 +1,8 @@
 static def call(n) {
-    def alphabet = (('A'..'Z')+('0'..'9')).join();
+    def alphabet = (('A'..'Z') + ('0'..'9')).join();
+    def rand = new Random()
 
-    return new Random().with {
-        (1..n).collect { alphabet[ nextInt( alphabet.length() ) ] }.join()
-    }
+    return (1..n).collect {
+        alphabet[rand.nextInt(alphabet.length())]
+    }.join()
 }
