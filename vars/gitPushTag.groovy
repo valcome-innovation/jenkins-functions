@@ -1,4 +1,4 @@
-def tagBuild(version, key) {
+def call(version, key) {
     sshagent(credentials: ["${key}"]) {
         checkout scm
         sh 'git config --global user.email "dev@valcome.at"'
