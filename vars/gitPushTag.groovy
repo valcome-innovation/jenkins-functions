@@ -1,4 +1,9 @@
-def call(remote, directory, tag) {
-    sshCommand remote: remote,
-            command: "cd ${directory} && git tag ${tag} && git push origin ${tag}"
+def tagBuild(version, key) {
+    sshagent(credentials: ["${key}"]) {
+        checkout scm
+        sh 'git config --global user.email "dev@valcome.at"'
+        sh 'git config --global user.name "valcome-analytics"'
+        sh "git tag ${version} || true"
+        sh "git push origin ${version}"
+    }
 }
