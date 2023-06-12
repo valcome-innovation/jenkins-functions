@@ -24,7 +24,7 @@ class AWSCodebuild implements Serializable {
         def customCommand = """
         aws codebuild start-build-batch \
         --project-name ${buildParams.project} \
-        --source-version refs/heads/${buildParams.branch} \
+        --source-version ${buildParams.branch} \
         --environment-variables-override """
 
         if (buildParams.app != null) {
