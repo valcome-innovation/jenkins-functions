@@ -63,14 +63,21 @@ class AWSCodebuild implements Serializable {
     }
 
     def getBuildStatus(remote, build_id) {
+        def buildNumber = steps.env.BUILD_NUMBER
+        def remoteFilePath = "/tmp/${buildNumber}_build-status.json"
+        def localFilePath = "${steps.env.WORKSPACE}/${buildNumber}_build-status.json"
         def result = steps.sshCommand remote: remote,
-                command: "aws codebuild batch-get-build-batches --ids ${build_id}"
-
-        def json = steps.readJSON text: "" + result
+                command: "aws codebuild batch-get-build-batches --ids ${build_id} > ${remoteFilePath}"
+        steps.sshGet remote: remote, from: "${remoteFilePath}", into: "${localFilePath}", override: true
+        def fileContent = steps.readFile "${localFilePath}"
+        def json = steps.readJSON text: "" + fileContent
         def runningBuild = json.buildBatches[0]
         steps.echo "Phase: " + runningBuild.currentPhase
         steps.echo "Status: " + runningBuild.buildBatchStatus
+
+        steps.sshRemove remote: remote, path: "${remoteFilePath}"
+        steps.sh("rm ${localFilePath}")
+
         return runningBuild
     }
-
 }
