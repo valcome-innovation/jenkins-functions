@@ -22,23 +22,20 @@ class AWSCodebuild implements Serializable {
 
     def startBuild(remote) {
         def customCommand = """
-            aws codebuild start-build-batch \
-                --project-name ${buildParams.project} \
-                --source-version refs/heads/${buildParams.branch} \
-                --environment-variables-override
-        """
+        aws codebuild start-build-batch \
+        --project-name ${buildParams.project} \
+        --source-version refs/heads/${buildParams.branch} \
+        --environment-variables-override """
 
         if (buildParams.app != null) {
-            customCommand = customCommand.concat(" name=APP,value=${buildParams.app} ")
-        }
-
-        if (buildParams.version != null) {
-            customCommand = customCommand.concat(" name=TAG,value=${buildParams.version} ")
+            customCommand += " name=APP,value=${buildParams.app} "
         }
 
         if (buildParams.environment != null) {
-            customCommand = customCommand.concat(" name=ENVIRONMENT,value=${buildParams.app} ")
+            customCommand += " name=ENVIRONMENT,value=${buildParams.app} "
         }
+
+        customCommand += " name=TAG,value=${buildParams.version} "
 
         steps.echo "${customCommand}"
 
