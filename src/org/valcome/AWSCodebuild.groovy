@@ -29,15 +29,15 @@ class AWSCodebuild implements Serializable {
         """
 
         if (buildParams.app != null) {
-            customCommand.concat(" name=APP,value=${buildParams.app} ")
+            customCommand = customCommand.concat(" name=APP,value=${buildParams.app} ")
         }
 
         if (buildParams.version != null) {
-            customCommand.concat(" name=TAG,value=${buildParams.version} ")
+            customCommand = customCommand.concat(" name=TAG,value=${buildParams.version} ")
         }
 
         if (buildParams.environment != null) {
-            customCommand.concat(" name=ENVIRONMENT,value=${buildParams.app} ")
+            customCommand = customCommand.concat(" name=ENVIRONMENT,value=${buildParams.app} ")
         }
 
         def result = steps.sh "${customCommand}"
