@@ -3,7 +3,7 @@ package org.valcome
 class AWSCodebuild {
     def buildParams
 
-    def construct(project = null, branch = 'main', version = null, app = null, environment = null) {
+    AWSCodebuild(project = null, branch = 'main', version = null, app = null, environment = null) {
         buildParams = [
             project: project,
             branch: branch,
@@ -12,7 +12,6 @@ class AWSCodebuild {
             environment: environment
         ]
     }
-
 
     def triggerBuild(remote) {
         def build = startBuild(remote)
