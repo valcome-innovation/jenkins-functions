@@ -39,9 +39,8 @@ class AWSCodebuild implements Serializable {
 
 
         def result = steps.sh script: "${customCommand}", returnStdout: true
-        steps.echo "${result}"
-        // def result = steps.sshCommand remote: remote, command: customCommand
         def json = steps.readJSON text: "" + result
+        steps.echo "${json.buildBatch}"
         return json.buildBatch
     }
 
@@ -62,11 +61,8 @@ class AWSCodebuild implements Serializable {
     }
 
     def getBuildStatus(remote, build_id) {
-        def resultFile = "${steps.env.WORKSPACE}/${buildNumber}_build-status.json"
-        // def result = steps.sshCommand remote: remote,
-        //         command: "aws codebuild batch-get-build-batches --ids ${build_id} > ${remoteFilePath}"
-
-        def result = steps.sh "aws codebuild batch-get-build-batches --ids ${build_id} > ${resultFile}"
+        def resultFile = "${steps.env.WORKSPACE}/build-status.json"
+        steps.sh "aws codebuild batch-get-build-batches --ids ${build_id} > ${resultFile}"
         def fileContent = steps.readFile "${resultFile}"
         steps.sh "rm ${resultFile}"
 
