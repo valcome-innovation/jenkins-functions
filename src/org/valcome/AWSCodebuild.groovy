@@ -38,7 +38,7 @@ class AWSCodebuild implements Serializable {
         customCommand += " name=TAG,value=${buildParams.version} "
 
 
-        def result = steps.sh "${customCommand}"
+        def result = steps.sh script: "${customCommand}", returnStdout: true
         steps.echo "${result}"
         // def result = steps.sshCommand remote: remote, command: customCommand
         def json = steps.readJSON text: "" + result
