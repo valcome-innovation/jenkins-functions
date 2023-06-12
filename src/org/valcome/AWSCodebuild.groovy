@@ -40,7 +40,6 @@ class AWSCodebuild implements Serializable {
 
         def result = steps.sh script: "${customCommand}", returnStdout: true
         def json = steps.readJSON text: "" + result
-        steps.echo "${json.buildBatch}"
         return json.buildBatch
     }
 
@@ -48,7 +47,7 @@ class AWSCodebuild implements Serializable {
         def runningBuild = getBuildStatus(remote, build_id)
 
         while (runningBuild.buildBatchStatus == "IN_PROGRESS") {
-            sleep 15
+            steps.sleep 15
             runningBuild = getBuildStatus(remote, build_id)
             steps.echo "wait 15 seconds for next poll..."
         }
