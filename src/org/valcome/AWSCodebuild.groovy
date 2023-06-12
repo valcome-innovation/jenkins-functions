@@ -22,9 +22,9 @@ class AWSCodebuild implements Serializable {
         while (runningBuild.buildBatchStatus == "IN_PROGRESS") {
             sleep 15
             runningBuild = getBuildStatus(remote, build.id)
-            echo "Phase: " + runningBuild.currentPhase
-            echo "Status: " + runningBuild.buildBatchStatus
-            echo "wait 15 seconds for next poll..."
+            steps.echo "Phase: " + runningBuild.currentPhase
+            steps.echo "Status: " + runningBuild.buildBatchStatus
+            steps.echo "wait 15 seconds for next poll..."
         }
 
         if (runningBuild.buildBatchStatus == "STOPPED") {
