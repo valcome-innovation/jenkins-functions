@@ -1,10 +1,12 @@
 package org.valcome
 
-class AWSCodebuild {
+class AWSCodebuild implements Serializable {
     def buildParams
+    def steps
 
-    AWSCodebuild(project = null, branch = 'main', version = null, app = null, environment = null) {
-        buildParams = [
+    AWSCodebuild(steps = null, project = null, branch = 'main', version = null, app = null, environment = null) {
+        this.steps = steps
+        this.buildParams = [
             project: project,
             branch: branch,
             version: version,
@@ -26,7 +28,7 @@ class AWSCodebuild {
         }
 
         if (runningBuild.buildBatchStatus == "STOPPED") {
-            currentBuild.result = 'ABORTED'
+            steps.currentBuild.result = 'ABORTED'
         } else if (runningBuild.buildBatchStatus != "SUCCEEDED") {
             throw new Exception('AWS Code Build failed (https://eu-central-1.console.aws.amazon.com/codesuite/codebuild/projects?region=eu-central-1)')
         }
@@ -53,16 +55,16 @@ class AWSCodebuild {
         }
 
 
-        def result = sshCommand remote: remote, command: customCommand
-        def json = readJSON text: "" + result
+        def result = steps.sshCommand remote: remote, command: customCommand
+        def json = steps.readJSON text: "" + result
         return json.buildBatch
     }
 
     def getBuildStatus(remote, build_id) {
-        def result = sshCommand remote: remote,
+        def result = steps.sshCommand remote: remote,
                 command: "aws codebuild batch-get-build-batches --ids ${build_id}"
 
-        def json = readJSON text: "" + result
+        def json = steps.readJSON text: "" + result
         return json.buildBatches[0]
     }
 
