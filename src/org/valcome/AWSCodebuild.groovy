@@ -47,7 +47,7 @@ class AWSCodebuild implements Serializable {
     }
 
     def awaitBuild(remote, build_id) {
-        def runningBuild = getBuildStatus(remote, build.id)
+        def runningBuild = getBuildStatus(remote, build_id)
 
         while (runningBuild.buildBatchStatus == "IN_PROGRESS") {
             sleep 15
