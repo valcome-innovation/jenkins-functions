@@ -11,7 +11,8 @@ class AWSCodebuild implements Serializable {
                  app = null,
                  environment = null,
                  skipTests = 'false',
-                 skipSonar = 'true') {
+                 skipSonar = 'true',
+                 skipPublish = null) {
         this.steps = steps
         this.buildParams = [
             project: project,
@@ -20,7 +21,8 @@ class AWSCodebuild implements Serializable {
             app: app,
             environment: environment,
             skipTests: skipTests,
-            skipSonar: skipSonar
+            skipSonar: skipSonar,
+            skipPublish: skipPublish
         ]
     }
 
@@ -44,6 +46,10 @@ class AWSCodebuild implements Serializable {
 
         if (buildParams.environment != null) {
             customCommand += " name=ENVIRONMENT,value=${buildParams.environment} "
+        }
+
+        if (buildParams.skipPublish != null) {
+            customCommand += " name=SKIP_PUBLISH,value=${buildParams.skipPublish} "
         }
 
         customCommand += " name=TAG,value=${buildParams.version} "
@@ -76,12 +82,8 @@ class AWSCodebuild implements Serializable {
     }
 
     def getBuildStatus(build_id) {
-        def resultFile = "${steps.env.WORKSPACE}/build-status.json"
-        steps.sh "aws codebuild batch-get-build-batches --ids ${build_id} > ${resultFile}"
-        def fileContent = steps.readFile "${resultFile}"
-        steps.sh "rm ${resultFile}"
-
-        def json = steps.readJSON text: "" + fileContent
+        def result = steps.sh script: "aws codebuild batch-get-build-batches --ids ${build_id}", returnStdout: true
+        def json = steps.readJSON text: "" + result
         def runningBuild = json.buildBatches[0]
         steps.echo "Phase: ${runningBuild.currentPhase}, Status: ${runningBuild.buildBatchStatus}"
 
