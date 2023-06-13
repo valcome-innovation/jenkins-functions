@@ -59,7 +59,7 @@ class AWSCodebuild implements Serializable {
         while (runningBuild.buildBatchStatus == "IN_PROGRESS") {
             steps.sleep 15
             runningBuild = getBuildStatus(remote, build_id)
-            updateGithubChecks(runningBuild)
+            reportBuildStatus(runningBuild)
             steps.echo "wait 15 seconds for next poll..."
         }
 
@@ -84,7 +84,7 @@ class AWSCodebuild implements Serializable {
         return runningBuild
     }
 
-    def updateGithubChecks(runningBuild) {
+    def reportBuildStatus(runningBuild) {
         // maps codebuild state to github status
         def statusMap = [
             PENDING: "QUEUED",
@@ -106,23 +106,22 @@ class AWSCodebuild implements Serializable {
             TIMED_OUT: "TIME_OUT"
         ]
 
-        // if (steps.env.CHANGE_ID != null) {
-            def buildGroups = runningBuild.buildGroups
-            def donwloadSource = buildGroups.find { it.identifier == "DOWNLOAD_SOURCE" };
+        def buildGroups = runningBuild.buildGroups
+        def donwloadSource = buildGroups.find { it.identifier == "DOWNLOAD_SOURCE" };
 
-            if (donwloadSource.currentBuildSummary.buildStatus == 'SUCCEEDED') {
-                def buildSteps = buildGroups.findAll { it.identifier != "DOWNLOAD_SOURCE" };
+        if (donwloadSource.currentBuildSummary.buildStatus == 'SUCCEEDED') {
+            def buildSteps = buildGroups.findAll { it.identifier != "DOWNLOAD_SOURCE" };
 
-                for (buildStep in buildSteps) {
-                    def status = statusMap[buildStep.currentBuildSummary.buildStatus]
-                    def conclusion = conclusionMap[buildStep.currentBuildSummary.buildStatus]
-                    def title = buildStep.identifier.replaceAll("_", " ").capitalize()
-                    steps.echo title
-                    steps.echo status
-                    steps.echo conclusion
+            for (buildStep in buildSteps) {
+                def status = statusMap[buildStep.currentBuildSummary.buildStatus]
+                def conclusion = conclusionMap[buildStep.currentBuildSummary.buildStatus]
+                def title = buildStep.identifier.replaceAll("_", " ").capitalize()
+                steps.echo "${title} is ${status}, conclusion is ${conclusion}"
+
+                if (steps.env.CHANGE_ID != null) {
                     steps.publishGithubCheck(title, title, status, conclusion)
                 }
             }
-        // }
+        }
     }
 }
