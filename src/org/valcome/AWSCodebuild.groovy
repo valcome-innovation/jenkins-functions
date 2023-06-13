@@ -87,7 +87,7 @@ class AWSCodebuild implements Serializable {
     def updateGithubChecks(runningBuild) {
         // maps codebuild state to github status
         def statusMap = [
-            PENDING: "QUEUED"
+            PENDING: "QUEUED",
             FAILED: "COMPLETED",
             FAULT: "COMPLETED",
             IN_PROGRESS: "IN_PROGRESS",
@@ -97,7 +97,7 @@ class AWSCodebuild implements Serializable {
         ]
 
         def conclusionMap = [
-            PENDING: "NONE"
+            PENDING: "NONE",
             IN_PROGRESS: "NONE",
             STOPPED: "CANCELLED",
             FAILED: "FAILURE",
