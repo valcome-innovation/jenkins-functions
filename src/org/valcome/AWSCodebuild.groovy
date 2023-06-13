@@ -24,12 +24,12 @@ class AWSCodebuild implements Serializable {
         ]
     }
 
-    def triggerBuildAndAwait(remote) {
-        def build = startBuild(remote)
-        awaitBuild(remote, build.id)
+    def triggerBuildAndAwait() {
+        def build = startBuild()
+        awaitBuild(build.id)
     }
 
-    def startBuild(remote) {
+    def startBuild() {
         def customCommand = """
         aws codebuild start-build-batch \
         --project-name ${buildParams.project} \
@@ -53,15 +53,15 @@ class AWSCodebuild implements Serializable {
         return json.buildBatch
     }
 
-    def awaitBuild(remote, build_id) {
+    def awaitBuild(build_id) {
         def endPhase = ['SUCCEEDED', 'COMPLETED', 'STOPPED', 'FAILED']
-        def runningBuild = getBuildStatus(remote, build_id)
+        def runningBuild = getBuildStatus(build_id)
         def currentPhase = runningBuild.currentPhase
         def batchStatus = runningBuild.buildBatchStatus
 
         while (!endPhase.contains(currentPhase)) {
             steps.sleep 15
-            runningBuild = getBuildStatus(remote, build_id)
+            runningBuild = getBuildStatus(build_id)
             reportBuildStatus(runningBuild)
         }
 
@@ -76,7 +76,7 @@ class AWSCodebuild implements Serializable {
         }
     }
 
-    def getBuildStatus(remote, build_id) {
+    def getBuildStatus(build_id) {
         def resultFile = "${steps.env.WORKSPACE}/build-status.json"
         steps.sh "aws codebuild batch-get-build-batches --ids ${build_id} > ${resultFile}"
         def fileContent = steps.readFile "${resultFile}"
