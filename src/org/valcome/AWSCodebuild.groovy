@@ -116,7 +116,7 @@ class AWSCodebuild implements Serializable {
                     steps.echo buildStep.identifier
                     steps.echo status
                     steps.echo conclusion
-                    publishGithubCheck(buildStep.identifier, buildStep.identifier, status, conclusion)
+                    steps.publishGithubCheck(buildStep.identifier, buildStep.identifier, status, conclusion)
                 }
             }
         // }
