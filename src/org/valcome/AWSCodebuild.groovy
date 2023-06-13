@@ -43,7 +43,7 @@ class AWSCodebuild implements Serializable {
         }
 
         if (buildParams.environment != null) {
-            customCommand += " name=ENVIRONMENT,value=${buildParams.app} "
+            customCommand += " name=ENVIRONMENT,value=${buildParams.environment} "
         }
 
         customCommand += " name=TAG,value=${buildParams.version} "
