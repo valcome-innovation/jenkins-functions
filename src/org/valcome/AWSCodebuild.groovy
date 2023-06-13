@@ -125,11 +125,20 @@ class AWSCodebuild implements Serializable {
                 def title = buildStep.identifier.replaceAll("_", " ").capitalize()
 
                 if (steps.env.CHANGE_ID != null) {
-                    steps.publishGithubCheck(title, title, status, conclusion)
+                    def detailsURL = getDetailsUrl(title)
+                    steps.publishGithubCheck(title, title, status, conclusion, '', '', detailsURL)
                 } else {
                     steps.echo "${title} is ${status}, conclusion is ${conclusion}"
                 }
             }
+        }
+    }
+
+    def getDetailsUrl(title) {
+        if (title.toLowerCase().contains("sonar")) {
+            return "https://sonar.valcome.dev/dashboard?id=${buildParams.project}"
+        } else {
+            return ''
         }
     }
 }
