@@ -1,7 +1,7 @@
 def call(name,
          title,
          status = 'COMPLETED', // NONE, QUEUED, IN_PROGRESS, COMPLETED
-         conclusion = 'SUCCESS', // NONE, ACTION_REQUIRED, SKIPPED, CANCELED, TIME_OUT, FAILURE, NEUTRAL, SUCCESS
+         conclusion = 'NONE', // NONE, ACTION_REQUIRED, SKIPPED, CANCELED, TIME_OUT, FAILURE, NEUTRAL, SUCCESS
          summary = '',
          text = '',
          detailsURL = '') {

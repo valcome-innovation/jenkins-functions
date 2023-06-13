@@ -59,6 +59,7 @@ class AWSCodebuild implements Serializable {
         while (runningBuild.buildBatchStatus == "IN_PROGRESS") {
             steps.sleep 15
             runningBuild = getBuildStatus(remote, build_id)
+            updateGithubChecks(runningBuild)
             steps.echo "wait 15 seconds for next poll..."
         }
 
@@ -80,5 +81,41 @@ class AWSCodebuild implements Serializable {
         steps.echo "Phase: ${runningBuild.currentPhase}, Status: ${runningBuild.buildBatchStatus}"
 
         return runningBuild
+    }
+
+    def updateGithubChecks(runningBuild) {
+        // maps codebuild state to github status
+        def statusMap = [
+            FAILED: "COMPLETED",
+            FAULT: "COMPLETED",
+            IN_PROGRESS: "IN_PROGRESS",
+            STOPPED: "COMPLETED",
+            SUCCEEDED: "COMPLETED",
+            TIMED_OUT: "COMPLETED"
+        ]
+
+        def conclusionMap = [
+            FAILED: "FAILURE",
+            FAULT: "FAILURE",
+            IN_PROGRESS: "NONE",
+            STOPPED: "CANCELLED",
+            SUCCEEDED: "SUCCESS",
+            TIMED_OUT: "TIMED_OUT"
+        ]
+
+        if (steps.env.CHANGE_ID != null) {
+            def buildGroups = runningBuild.buildGroups
+            def donwloadSource = buildGroups.find { it.identifier == "DOWNLOAD_SOURCE" };
+
+            if (donwloadSource.currentBuildSummary.buildStatus == 'SUCCEEDED') {
+                def buildSteps = buildGroups.findAll { it.identifier != "DOWNLOAD_SOURCE" };
+
+                for (buildStep in buildSteps) {
+                    def status = statusMap[buildStep.currentBuildSummary.buildStatus]
+                    def conclusion = conclusionMap[buildStep.currentBuildSummary.buildStatus]
+                    publishGithubCheck(buildStep.identifier, buildStep.identifier, status, conclusion)
+                }
+            }
+        }
     }
 }
