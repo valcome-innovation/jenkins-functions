@@ -4,14 +4,23 @@ class AWSCodebuild implements Serializable {
     def buildParams
     def steps
 
-    AWSCodebuild(steps = null, project = null, branch = 'main', version = null, app = null, environment = null) {
+    AWSCodebuild(steps = null,
+                 project = null,
+                 branch = 'main',
+                 version = null,
+                 app = null,
+                 environment = null,
+                 skipTests = 'false',
+                 skipSonar = 'true') {
         this.steps = steps
         this.buildParams = [
             project: project,
             branch: branch,
             version: version,
             app: app,
-            environment: environment
+            environment: environment,
+            skipTests: skipTests,
+            skipSonar: skipSonar
         ]
     }
 
@@ -25,7 +34,9 @@ class AWSCodebuild implements Serializable {
         aws codebuild start-build-batch \
         --project-name ${buildParams.project} \
         --source-version ${buildParams.branch} \
-        --environment-variables-override """
+        --environment-variables-override \
+        name=SKIP_TESTS,value=${buildParams.skipTests} \
+        name=SKIP_SONAR,value=${buildParams.skipSonar} """
 
         if (buildParams.app != null) {
             customCommand += " name=APP,value=${buildParams.app} "
@@ -36,7 +47,6 @@ class AWSCodebuild implements Serializable {
         }
 
         customCommand += " name=TAG,value=${buildParams.version} "
-
 
         def result = steps.sh script: "${customCommand}", returnStdout: true
         def json = steps.readJSON text: "" + result
