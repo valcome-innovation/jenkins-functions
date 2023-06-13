@@ -103,7 +103,7 @@ class AWSCodebuild implements Serializable {
             TIMED_OUT: "TIMED_OUT"
         ]
 
-        if (steps.env.CHANGE_ID != null) {
+        // if (steps.env.CHANGE_ID != null) {
             def buildGroups = runningBuild.buildGroups
             def donwloadSource = buildGroups.find { it.identifier == "DOWNLOAD_SOURCE" };
 
@@ -113,9 +113,12 @@ class AWSCodebuild implements Serializable {
                 for (buildStep in buildSteps) {
                     def status = statusMap[buildStep.currentBuildSummary.buildStatus]
                     def conclusion = conclusionMap[buildStep.currentBuildSummary.buildStatus]
+                    steps.echo buildStep.identifier
+                    steps.echo status
+                    steps.echo conclusion
                     publishGithubCheck(buildStep.identifier, buildStep.identifier, status, conclusion)
                 }
             }
-        }
+        // }
     }
 }
