@@ -54,19 +54,25 @@ class AWSCodebuild implements Serializable {
     }
 
     def awaitBuild(remote, build_id) {
+        def endPhase = ['SUCCEEDED', 'COMPLETED', 'STOPPED', 'FAILED']
         def runningBuild = getBuildStatus(remote, build_id)
+        def currentPhase = runningBuild.currentPhase
+        def batchStatus = runningBuild.buildBatchStatus
 
-        while (runningBuild.buildBatchStatus == "IN_PROGRESS") {
+        while (!endPhase.contains(currentPhase)) {
             steps.sleep 15
             runningBuild = getBuildStatus(remote, build_id)
             reportBuildStatus(runningBuild)
-            steps.echo "wait 15 seconds for next poll..."
         }
 
-        if (runningBuild.buildBatchStatus == "STOPPED") {
+        if (endPhase == "STOPPED") {
             steps.currentBuild.result = 'ABORTED'
-        } else if (runningBuild.buildBatchStatus != "SUCCEEDED") {
-            throw new Exception('AWS Code Build failed (https://eu-central-1.console.aws.amazon.com/codesuite/codebuild/projects?region=eu-central-1)')
+        } else if (endPhase == "COMPLETED") {
+            steps.currentBuild.result = 'UNSTABLE'
+        } else if (endPhase == "SUCCEEDED") {
+            steps.currentBuild.result = 'FAILURE'
+        } else {
+            steps.currentBuild.result = 'SUCCESS'
         }
     }
 
@@ -78,7 +84,6 @@ class AWSCodebuild implements Serializable {
 
         def json = steps.readJSON text: "" + fileContent
         def runningBuild = json.buildBatches[0]
-        //steps.echo fileContent
         steps.echo "Phase: ${runningBuild.currentPhase}, Status: ${runningBuild.buildBatchStatus}"
 
         return runningBuild
@@ -113,6 +118,7 @@ class AWSCodebuild implements Serializable {
             def buildSteps = buildGroups.findAll { it.identifier != "DOWNLOAD_SOURCE" };
 
             for (buildStep in buildSteps) {
+                def ignoreFailure = buildStep.ignoreFailure
                 def status = statusMap[buildStep.currentBuildSummary.buildStatus]
                 def conclusion = conclusionMap[buildStep.currentBuildSummary.buildStatus]
                 def title = buildStep.identifier.replaceAll("_", " ").capitalize()
