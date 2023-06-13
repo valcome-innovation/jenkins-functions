@@ -123,10 +123,11 @@ class AWSCodebuild implements Serializable {
                 def status = statusMap[buildStep.currentBuildSummary.buildStatus]
                 def conclusion = conclusionMap[buildStep.currentBuildSummary.buildStatus]
                 def title = buildStep.identifier.replaceAll("_", " ").capitalize()
-                steps.echo "${title} is ${status}, conclusion is ${conclusion}"
 
                 if (steps.env.CHANGE_ID != null) {
                     steps.publishGithubCheck(title, title, status, conclusion)
+                } else {
+                    steps.echo "${title} is ${status}, conclusion is ${conclusion}"
                 }
             }
         }
