@@ -78,7 +78,7 @@ class AWSCodebuild implements Serializable {
 
         def json = steps.readJSON text: "" + fileContent
         def runningBuild = json.buildBatches[0]
-        steps.echo fileContent
+        //steps.echo fileContent
         steps.echo "Phase: ${runningBuild.currentPhase}, Status: ${runningBuild.buildBatchStatus}"
 
         return runningBuild
@@ -99,11 +99,11 @@ class AWSCodebuild implements Serializable {
         def conclusionMap = [
             PENDING: "NONE",
             IN_PROGRESS: "NONE",
-            STOPPED: "CANCELLED",
+            STOPPED: "CANCELED",
             FAILED: "FAILURE",
             FAULT: "FAILURE",
             SUCCEEDED: "SUCCESS",
-            TIMED_OUT: "TIMED_OUT"
+            TIMED_OUT: "TIME_OUT"
         ]
 
         // if (steps.env.CHANGE_ID != null) {
@@ -116,10 +116,11 @@ class AWSCodebuild implements Serializable {
                 for (buildStep in buildSteps) {
                     def status = statusMap[buildStep.currentBuildSummary.buildStatus]
                     def conclusion = conclusionMap[buildStep.currentBuildSummary.buildStatus]
-                    steps.echo buildStep.identifier
+                    def title = buildStep.identifier.replaceAll("_", " ").capitalize()
+                    steps.echo title
                     steps.echo status
                     steps.echo conclusion
-                    steps.publishGithubCheck(buildStep.identifier, buildStep.identifier, status, conclusion)
+                    steps.publishGithubCheck(title, title, status, conclusion)
                 }
             }
         // }
