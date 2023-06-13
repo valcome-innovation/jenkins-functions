@@ -78,7 +78,7 @@ class AWSCodebuild implements Serializable {
 
         def json = steps.readJSON text: "" + fileContent
         def runningBuild = json.buildBatches[0]
-        steps.echo resultFile
+        steps.echo fileContent
         steps.echo "Phase: ${runningBuild.currentPhase}, Status: ${runningBuild.buildBatchStatus}"
 
         return runningBuild
