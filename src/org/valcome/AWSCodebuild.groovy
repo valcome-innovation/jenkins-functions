@@ -74,20 +74,15 @@ class AWSCodebuild implements Serializable {
 
 
         if (endPhase == "STOPPED") {
-            steps.currentBuild.currentResult = 'ABORTED'
             steps.currentBuild.result = 'ABORTED'
             steps.error("Build aborted")
         } else if (endPhase == "COMPLETED") {
-            steps.currentBuild.currentResult = 'UNSTABLE'
             steps.currentBuild.result = 'UNSTABLE'
             steps.error("Build unstable")
         } else if (endPhase == "FAILED") {
-            steps.currentBuild.currentResult = 'FAILURE'
             steps.currentBuild.result = 'FAILURE'
             steps.error("Build failed")
         } else {
-            steps.echo("Build Finished Success")
-            steps.currentBuild.currentResult = 'SUCCESS'
             steps.currentBuild.result = 'SUCCESS'
         }
 
