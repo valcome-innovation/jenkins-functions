@@ -70,6 +70,9 @@ class AWSCodebuild implements Serializable {
             reportBuildStatus(runningBuild)
         }
 
+        steps.echo "Phase: ${endPhase} finished with: ${batchStatus}"
+
+
         if (endPhase == "STOPPED") {
             steps.currentBuild.currentResult = 'ABORTED'
             steps.currentBuild.result = 'ABORTED'
@@ -88,7 +91,7 @@ class AWSCodebuild implements Serializable {
             steps.currentBuild.result = 'SUCCESS'
         }
 
-        steps.echo "Build Finished: ${steps.currentBuild.currentResult}"
+        steps.echo "Build Finished: ${steps.currentBuild.result}"
     }
 
     def getBuildStatus(build_id) {
