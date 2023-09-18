@@ -69,13 +69,15 @@ class AWSCodebuild implements Serializable {
             reportBuildStatus(runningBuild)
         }
 
-        if (endPhase == "STOPPED") {
+        def endStatus = runningBuild.buildBatchStatus
+
+        if (endStatus == "STOPPED") {
             steps.currentBuild.result = 'ABORTED'
             steps.error("Build aborted")
-        } else if (endPhase == "COMPLETED") {
+        } else if (endStatus == "COMPLETED") {
             steps.currentBuild.result = 'UNSTABLE'
             steps.error("Build unstable")
-        } else if (endPhase == "FAILED") {
+        } else if (endStatus == "FAILED") {
             steps.currentBuild.result = 'FAILURE'
             steps.error("Build failed")
         } else {
