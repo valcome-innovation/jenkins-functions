@@ -64,7 +64,7 @@ class AWSCodebuild implements Serializable {
 
     def getBuildStatus(build_id) {
         def result = steps.sh script: "aws codebuild batch-get-builds --ids ${build_id}", returnStdout: true
-        def json = readJSON text: "" + result
+        def json = steps.readJSON text: "" + result
         def runningBuild = json.builds[0]
         return runningBuild
     }
