@@ -59,13 +59,13 @@ class AWSCodebuildBatch implements Serializable {
         return json.buildBatch
     }
 
-    def awaitBuildBatch(build_id) {
+    def awaitBuildBatch(batch_id) {
         def endPhase = ['SUCCEEDED', 'COMPLETED', 'STOPPED', 'FAILED']
-        def runningBatch = getBuildStatus(build_id)
+        def runningBatch = getBuildStatus(batch_id)
 
         while (!endPhase.contains(runningBatch.buildBatchStatus)) {
             steps.sleep 15
-            runningBatch = getBuildStatus(build_id)
+            runningBatch = getBuildBatchStatus(batch_id)
             reportBuildStatus(runningBatch)
         }
 
