@@ -1,18 +1,18 @@
 package org.valcome
 
-class AWSCodebuild implements Serializable {
+class AWSCodebuildBatch implements Serializable {
     def buildParams
     def steps
 
-    AWSCodebuild(steps = null,
-                 project = null,
-                 branch = 'main',
-                 version = null,
-                 app = null,
-                 environment = null,
-                 skipTests = 'false',
-                 skipSonar = 'true',
-                 skipPublish = null) {
+    AWSCodebuildBatch(steps = null,
+                      project = null,
+                      branch = 'main',
+                      version = null,
+                      app = null,
+                      environment = null,
+                      skipTests = 'false',
+                      skipSonar = 'true',
+                      skipPublish = null) {
         this.steps = steps
         this.buildParams = [
             project: project,
@@ -26,12 +26,12 @@ class AWSCodebuild implements Serializable {
         ]
     }
 
-    def triggerBuildAndAwait() {
-        def build = startBuild()
-        awaitBuild(build.id)
+    def triggerBuildBatchAndAwait() {
+        def batch = startBuildBatch()
+        awaitBuildBatch(batch.id)
     }
 
-    def startBuild() {
+    def startBuildBatch() {
         def customCommand = """
         aws codebuild start-build-batch \
         --project-name ${buildParams.project} \
@@ -59,17 +59,17 @@ class AWSCodebuild implements Serializable {
         return json.buildBatch
     }
 
-    def awaitBuild(build_id) {
+    def awaitBuildBatch(build_id) {
         def endPhase = ['SUCCEEDED', 'COMPLETED', 'STOPPED', 'FAILED']
-        def runningBuild = getBuildStatus(build_id)
+        def runningBatch = getBuildStatus(build_id)
 
-        while (!endPhase.contains(runningBuild.buildBatchStatus)) {
+        while (!endPhase.contains(runningBatch.buildBatchStatus)) {
             steps.sleep 15
-            runningBuild = getBuildStatus(build_id)
-            reportBuildStatus(runningBuild)
+            runningBatch = getBuildStatus(build_id)
+            reportBuildStatus(runningBatch)
         }
 
-        def endStatus = runningBuild.buildBatchStatus
+        def endStatus = runningBatch.buildBatchStatus
 
         if (endStatus == "STOPPED") {
             steps.currentBuild.result = 'ABORTED'
@@ -87,16 +87,16 @@ class AWSCodebuild implements Serializable {
         steps.echo "Build Finished: ${steps.currentBuild.result}"
     }
 
-    def getBuildStatus(build_id) {
-        def result = steps.sh script: "aws codebuild batch-get-build-batches --ids ${build_id}", returnStdout: true
+    def getBuildBatchStatus(batch_id) {
+        def result = steps.sh script: "aws codebuild batch-get-build-batches --ids ${batch_id}", returnStdout: true
         def json = steps.readJSON text: "" + result
-        def runningBuild = json.buildBatches[0]
-        steps.echo "Phase: ${runningBuild.currentPhase}, Status: ${runningBuild.buildBatchStatus}"
+        def runningBatch = json.buildBatches[0]
+        steps.echo "Phase: ${runningBatch.currentPhase}, Status: ${runningBatch.buildBatchStatus}"
 
-        return runningBuild
+        return runningBatch
     }
 
-    def reportBuildStatus(runningBuild) {
+    def reportBuildStatus(runningBatch) {
         // maps codebuild state to github status
         def statusMap = [
             PENDING: "QUEUED",
@@ -118,7 +118,7 @@ class AWSCodebuild implements Serializable {
             TIMED_OUT: "TIME_OUT"
         ]
 
-        def buildGroups = runningBuild.buildGroups
+        def buildGroups = runningBatch.buildGroups
         def donwloadSource = buildGroups.find { it.identifier == "DOWNLOAD_SOURCE" };
 
         if (donwloadSource.currentBuildSummary.buildStatus == 'SUCCEEDED') {
