@@ -21,13 +21,13 @@ class NgLiveDeployment implements Serializable {
     }
 
     def onWebHosts(hosts, ssh) {
-        params.webHosts = extractHosts(hosts);
+        params.webHosts = extractHosts(hosts)
         params.webSSH = ssh
         return this;
     }
 
     def onAdminHosts(hosts, ssh) {
-        params.adminHosts = extractHosts(hosts);
+        params.adminHosts = extractHosts(hosts)
         params.adminSSH = ssh
         return this;
     }
@@ -44,10 +44,10 @@ class NgLiveDeployment implements Serializable {
 
 
     private def deployOnWebNode(host, web_version, server_version, saleor_version, dashboard_version) {
-        withSshRemote(params.webSSH, host, 'REMOTE') {
+        steps.withSshRemote(params.webSSH, host, 'REMOTE') {
             steps.echo "Starting live deploy on: ${host}"
 
-            gitForcePull(REMOTE, '~/git/ng-live-suite/ ', params.branch)
+            steps.gitForcePull(REMOTE, '~/git/ng-live-suite/ ', params.branch)
             deployLiveOn(REMOTE, web_version, server_version, saleor_version, dashboard_version)
 
             steps.echo "Finished live deploy on: ${host}"
@@ -55,7 +55,7 @@ class NgLiveDeployment implements Serializable {
     }
 
     private def deployLiveOn(remote, web_version, server_version, saleor_version, dashboard_version) {
-        sshCommand remote: remote,
+        steps.sshCommand remote: remote,
                 command: """
                     cd ~/git/ng-live-suite/ && \
                     LIVE_WEB_VERSION=${web_version} \
@@ -74,10 +74,10 @@ class NgLiveDeployment implements Serializable {
     }
 
     private def deployOnAdminNode(host, admin_version, server_version) {
-        withSshRemote(params.adminSSH, host, 'REMOTE') {
+        steps.withSshRemote(params.adminSSH, host, 'REMOTE') {
             steps.echo "Starting admin deploy"
 
-            gitForcePull(REMOTE, '~/git/ng-live-suite/ ', params.branch)
+            steps.gitForcePull(REMOTE, '~/git/ng-live-suite/ ', params.branch)
             deployAdminOn(REMOTE, admin_version, server_version)
 
             steps.echo "Finished admin deploy"
@@ -85,7 +85,7 @@ class NgLiveDeployment implements Serializable {
     }
 
     private def deployAdminOn(remote, admin_version, server_version) {
-        sshCommand remote: remote,
+        steps.sshCommand remote: remote,
                 command: """
                     cd ~/git/ng-live-suite/ && \
                     LIVE_ADMIN_DASHBOARD_VERSION=${admin_version} \
