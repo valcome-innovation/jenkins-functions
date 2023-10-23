@@ -94,4 +94,17 @@ class NgLiveDeployment implements Serializable {
                     sh ~/git/ng-live-suite/ci/deploy/${params.project}/${params.env}/deploy-admin.sh
                 """
     }
+
+    def triggerE2eTests() {
+        steps.build job: '/ng-live/e2e/web',
+            quietPeriod: 30,
+            wait: true,
+            propagate: false,
+            parameters: [
+                string(name: 'branch', value: params.branch),
+                string(name: 'project', value: params.branch),
+                string(name: 'environment', value: 'ci'),
+                string(name: 'host', value: params.webHosts)
+            ]
+    }
 }
