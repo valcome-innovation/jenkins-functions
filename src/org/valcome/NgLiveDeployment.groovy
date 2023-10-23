@@ -5,11 +5,10 @@ class NgLiveDeployment implements Serializable {
     def params
 
     NgLiveDeployment(
-        steps = null,
-        branch = 'main',
-        project = null,
-        env = 'dev',
-    ) {
+                    steps = null,
+                    branch = 'main',
+                    project = null,
+                    env = 'dev') {
         this.params = [
             project: project
             branch: branch
