@@ -9,6 +9,7 @@ class NgLiveDeployment implements Serializable {
                     branch = 'main',
                     project = null,
                     env = 'dev') {
+        this.steps = steps
         this.params = [
             project: project,
             branch: branch,
