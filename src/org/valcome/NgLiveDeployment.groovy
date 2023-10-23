@@ -101,10 +101,10 @@ class NgLiveDeployment implements Serializable {
             wait: true,
             propagate: false,
             parameters: [
-                string(name: 'branch', value: params.branch),
-                string(name: 'project', value: params.project),
-                string(name: 'environment', value: 'ci'),
-                string(name: 'host', value: params.webHosts[0])
+                steps.string(name: 'branch', value: params.branch),
+                steps.string(name: 'project', value: params.project),
+                steps.string(name: 'environment', value: 'ci'),
+                steps.string(name: 'host', value: params.webHosts[0])
             ]
     }
 }
