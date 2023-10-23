@@ -10,12 +10,12 @@ class NgLiveDeployment implements Serializable {
                     project = null,
                     env = 'dev') {
         this.params = [
-            project: project
-            branch: branch
-            env: env
-            webHosts: null
-            adminHosts: null
-            webSSH: null
+            project: project,
+            branch: branch,
+            env: env,
+            webHosts: null,
+            adminHosts: null,
+            webSSH: null,
             adminSSH: null
         ]
     }
