@@ -33,7 +33,7 @@ class AWSS3Deployment implements Serializable {
         def invalidateCommand = """
         aws cloudfront create-invalidation \
         --distribution-id ${cloudfrontId} \
-        --paths / \
+        --paths /
         """
 
         steps.sh script: "${invalidateCommand}", returnStdout: true
