@@ -29,11 +29,17 @@ class AWSS3Deployment implements Serializable {
         steps.sh script: "${deployCommand}", returnStdout: true
     }
 
+    private def cleanDeploymentBucket(bucket) {
+        def cleanCommand = "aws s3 rm s3://${bucket}/ --recursive"
+
+        steps.sh script: "${cleanCommand}", returnStdout: true
+    }
+
     def invalidateCloudfrontCaches(cloudfrontId) {
         def invalidateCommand = """
         aws cloudfront create-invalidation \
         --distribution-id ${cloudfrontId} \
-        --paths /
+        --paths / \
         """
 
         steps.sh script: "${invalidateCommand}", returnStdout: true
