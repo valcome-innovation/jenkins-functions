@@ -5,7 +5,6 @@ def call(msg, envs = '') {
     _finished in ${currentBuild.durationString.replace(' and counting', '')}_
     ${currentBuild.currentResult}
     ${msg}
-
     ${envs}
     """
 
