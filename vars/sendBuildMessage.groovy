@@ -1,9 +1,7 @@
 def call(msg, envs = '') {
     def message = """
-    *${env.JOB_BASE_NAME} #${env.BUILD_NUMBER}*
+    *${env.JOB_BASE_NAME} #${env.BUILD_NUMBER}* _${currentBuild.currentResult} after ${currentBuild.durationString.replace(' and counting', '')}_
     ${env.BUILD_URL}
-    _finished in ${currentBuild.durationString.replace(' and counting', '')}_
-    ${currentBuild.currentResult}
     ${msg}
     ${envs}
     """
