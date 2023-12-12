@@ -97,7 +97,7 @@ class NgLiveDeployment implements Serializable {
 
     def triggerE2eTests() {
         def e2eTestJob = steps.build job: '/ng-live/e2e/web',
-            quietPeriod: 30,
+            quietPeriod: 60,
             wait: true,
             propagate: false,
             parameters: [
