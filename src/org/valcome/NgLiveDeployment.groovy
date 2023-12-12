@@ -106,6 +106,6 @@ class NgLiveDeployment implements Serializable {
                 steps.string(name: 'environment', value: 'ci'),
                 steps.string(name: 'host', value: params.webHosts[0])
             ]
-        steps.echo "${e2eTestJob.getResult()}"
+        return e2eTestJob.getResult()
     }
 }
