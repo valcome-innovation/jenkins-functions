@@ -108,7 +108,10 @@ class NgLiveDeployment implements Serializable {
             ]
 
         if (e2eTestJob.getResult() != "SUCCESS") {
+            steps.echo "E2E Tests weren't successful"
             steps.currentBuild.result = 'UNSTABLE'
+        } else {
+            steps.echo "E2E Tests finished SUCCESS"
         }
     }
 }
