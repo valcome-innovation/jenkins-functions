@@ -107,7 +107,7 @@ class NgLiveDeployment implements Serializable {
                 steps.string(name: 'host', value: params.webHosts[0])
             ]
 
-        if (e2eTestJob.getResult() != "SUCCESS")) {
+        if (e2eTestJob.getResult() != "SUCCESS") {
             steps.currentBuild.result = 'UNSTABLE'
         }
     }
