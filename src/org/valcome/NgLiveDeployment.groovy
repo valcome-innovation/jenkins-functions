@@ -5,19 +5,19 @@ class NgLiveDeployment implements Serializable {
     def params
 
     NgLiveDeployment(
-                    steps = null,
-                    branch = 'main',
-                    project = null,
-                    env = 'dev') {
+            steps = null,
+            branch = 'main',
+            project = null,
+            env = 'dev') {
         this.steps = steps
         this.params = [
-            project: project,
-            branch: branch,
-            env: env,
-            webHosts: null,
-            adminHosts: null,
-            webSSH: null,
-            adminSSH: null
+                project   : project,
+                branch    : branch,
+                env       : env,
+                webHosts  : null,
+                adminHosts: null,
+                webSSH    : null,
+                adminSSH  : null
         ]
     }
 
@@ -101,15 +101,15 @@ class NgLiveDeployment implements Serializable {
 
     def triggerE2eTests() {
         def e2eTestJob = steps.build job: '/ng-live/e2e/web',
-            quietPeriod: 60,
-            wait: true,
-            propagate: false,
-            parameters: [
-                steps.string(name: 'branch', value: params.branch),
-                steps.string(name: 'project', value: params.project),
-                steps.string(name: 'environment', value: 'ci'),
-                steps.string(name: 'host', value: params.webHosts[0])
-            ]
+                quietPeriod: 60,
+                wait: true,
+                propagate: false,
+                parameters: [
+                        steps.string(name: 'branch', value: params.branch),
+                        steps.string(name: 'project', value: params.project),
+                        steps.string(name: 'environment', value: 'ci'),
+                        steps.string(name: 'host', value: params.webHosts[0])
+                ]
 
         if (e2eTestJob.getResult() != "SUCCESS") {
             steps.echo "E2E Tests weren't successful"
@@ -124,9 +124,9 @@ class NgLiveDeployment implements Serializable {
                 wait: false,
                 propagate: false,
                 parameters: [
-                        steps.string(name: 'ssh_id', value: ssh),
-                        steps.string(name: 'host', value: params.webHosts[0]),
-                        steps.string(name: 'delay', value: '600'),
+                        steps.string(name: 'SSH_ID', value: ssh),
+                        steps.string(name: 'HOST', value: params.webHosts[0]),
+                        steps.string(name: 'DELAY', value: '600'),
                 ]
     }
 }
