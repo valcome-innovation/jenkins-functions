@@ -45,6 +45,8 @@ class NgLiveDeployment implements Serializable {
 
 
     private def deployOnWebNode(host, web_version, server_version, saleor_version, dashboard_version) {
+        silenceNetdata(params.webSSH)
+
         steps.withSshRemote(params.webSSH, host, 'REMOTE') {
             steps.echo "Starting live deploy on: ${host}"
 
@@ -75,6 +77,8 @@ class NgLiveDeployment implements Serializable {
     }
 
     private def deployOnAdminNode(host, admin_version, server_version) {
+        silenceNetdata(params.adminSSH)
+
         steps.withSshRemote(params.adminSSH, host, 'REMOTE') {
             steps.echo "Starting admin deploy"
 
@@ -113,5 +117,16 @@ class NgLiveDeployment implements Serializable {
         } else {
             steps.echo "E2E Tests finished SUCCESS"
         }
+    }
+
+    def silenceNetdata(ssh) {
+        steps.build job: '/infrastructure/netdata/netdata-silence',
+                wait: false,
+                propagate: false,
+                parameters: [
+                        steps.string(name: 'ssh_id', value: ssh),
+                        steps.string(name: 'host', value: params.webHosts[0]),
+                        steps.string(name: 'delay', value: '600'),
+                ]
     }
 }
