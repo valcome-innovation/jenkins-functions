@@ -37,8 +37,7 @@ class AWSCodebuildBatch implements Serializable {
         --project-name ${buildParams.project} \
         --source-version ${buildParams.branch} \
         --environment-variables-override \
-        name=SKIP_TESTS,value=${buildParams.skipTests} \
-        name=SKIP_SONAR,value=${buildParams.skipSonar} """
+        name=TAG,value=${buildParams.version} """
 
         if (buildParams.app != null) {
             customCommand += " name=APP,value=${buildParams.app} "
@@ -48,11 +47,17 @@ class AWSCodebuildBatch implements Serializable {
             customCommand += " name=ENVIRONMENT,value=${buildParams.environment} "
         }
 
+        if (buildParams.skipTests != null) {
+            customCommand += " name=SKIP_TESTS,value=${buildParams.skipTests} "
+        }
+
+        if (buildParams.skipSonar != null) {
+            customCommand += " name=SKIP_SONAR,value=${buildParams.skipSonar} "
+        }
+
         if (buildParams.skipPublish != null) {
             customCommand += " name=SKIP_PUBLISH,value=${buildParams.skipPublish} "
         }
-
-        customCommand += " name=TAG,value=${buildParams.version} "
 
         def result = steps.sh script: "${customCommand}", returnStdout: true
         def json = steps.readJSON text: "" + result
