@@ -10,6 +10,10 @@ def call(SSH_ID,
                     usernameVariable: 'user'
             )
     ]) {
+        if (env.SSH_PASSPHRASE == null) {
+                echo "SSH Key without passphrase"
+        }
+
         def REMOTE = getRemote(HOST, user, passphrase, identity, true)
 
         closure.delegate = [(remoteName): REMOTE]
