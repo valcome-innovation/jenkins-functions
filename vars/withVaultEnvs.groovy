@@ -1,34 +1,22 @@
-def call(SECRET_ID,
-         PROJECT,
-         APP,
-         ZONE,
-         ENV_VARS) {
-
-    def configuration = [
-        vaultUrl: 'https://vault.valcome.dev',
-        vaultCredentialId: "${SECRET_ID}",
-    ]
-
-    def secretValues = ENV_VARS.collect { value ->
-        [ envVar: value, vaultKey: value ]
+def call(project,
+         app,
+         zone) {
+    withCredentials([[
+        $class: 'VaultTokenCredentialBinding',
+        credentialsId: "VAULT_APP_ROLE",
+        vaultAddr: 'https://vault.valcome.dev'
+    ]]) {
+        return fetchEnvsFromVault(project, app, ".env")
     }
+}
 
-    def secrets = [
-        [
-            path: "env/${PROJECT}/${APP}/.env",
-            secretValues: secretValues
-        ],
-        [
-            path: "env/${PROJECT}/${APP}/.env.${ZONE}",
-            secretValues: secretValues
-        ],
-    ]
-
-    withVault([
-        configuration: configuration,
-        vaultSecrets: secrets
-    ]) {
-        echo "$DB_HOST"
-        echo "$DB_NAME"
-    }
+def fetchEnvsFromVault(project, app, env) {
+    def res = sh script: '''
+    curl \
+    -X GET \
+    -H "X-Vault-Token: $VAULT_TOKEN" \
+    $VAULT_ADDR/v1/env/data/$project/$app/$env
+    ''', returnStdout: true
+    def jsonRes = readJSON text: res
+    return jsonRes.data.data
 }
