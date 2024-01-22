@@ -7,15 +7,17 @@ def call(project,
             credentialsId: "VAULT_APP_ROLE",
             vaultAddr: "https://vault.valcome.dev"
     ]]) {
-        def baseEnv = fetchEnvsFromVault(project, 'base', ".env")
-        def baseEnvZone = fetchEnvsFromVault(project, 'base', ".env.${zone}")
-        def appEnv = fetchEnvsFromVault(project, app, ".env")
-        def appEnvZone = fetchEnvsFromVault(project, app, ".env.${zone}")
+        def fullEnv = [:]
 
-        def fullEnv = baseEnv
-        fullEnv.putAll(baseEnvZone)
-        fullEnv.putAll(appEnv)
-        fullEnv.putAll(appEnvZone)
+        fullEnv.putAll(fetchEnvsFromVault(project, 'base', ".env"))
+        if (zone != null) {
+            fullEnv.putAll(fetchEnvsFromVault(project, 'base', ".env.${zone}"))
+        }
+
+        fullEnv.putAll(fetchEnvsFromVault(project, app, ".env"))
+        if (zone != null) {
+            fullEnv.putAll(fetchEnvsFromVault(project, app, ".env.${zone}"))
+        }
 
         closure.delegate = [("VAULT_ENV"): fullEnv]
         closure()
