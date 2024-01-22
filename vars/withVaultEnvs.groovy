@@ -2,26 +2,23 @@ def call(project,
          app,
          zone,
          closure) {
-    withCredentials([string(credentialsId: 'VAULT_ADDR', variable: 'VAULT_ADDR')]) {
-        def vaultAddr = '$VAULT_ADDR'
-        withCredentials([[
-                $class: 'VaultTokenCredentialBinding',
-                credentialsId: "VAULT_APP_ROLE",
-                vaultAddr: "$vaultAddr"
-        ]]) {
-            def baseEnv = fetchEnvsFromVault(project, 'base', ".env")
-            def baseEnvZone = fetchEnvsFromVault(project, 'base', ".env.${zone}")
-            def appEnv = fetchEnvsFromVault(project, app, ".env")
-            def appEnvZone = fetchEnvsFromVault(project, app, ".env.${zone}")
+    withCredentials([[
+            $class: 'VaultTokenCredentialBinding',
+            credentialsId: "VAULT_APP_ROLE",
+            vaultAddr: "https://vault.valcome.dev"
+    ]]) {
+        def baseEnv = fetchEnvsFromVault(project, 'base', ".env")
+        def baseEnvZone = fetchEnvsFromVault(project, 'base', ".env.${zone}")
+        def appEnv = fetchEnvsFromVault(project, app, ".env")
+        def appEnvZone = fetchEnvsFromVault(project, app, ".env.${zone}")
 
-            def fullEnv = baseEnv
-            fullEnv.putAll(baseEnvZone)
-            fullEnv.putAll(appEnv)
-            fullEnv.putAll(appEnvZone)
+        def fullEnv = baseEnv
+        fullEnv.putAll(baseEnvZone)
+        fullEnv.putAll(appEnv)
+        fullEnv.putAll(appEnvZone)
 
-            closure.delegate = [("VAULT_ENV"): fullEnv]
-            closure()
-        }
+        closure.delegate = [("VAULT_ENV"): fullEnv]
+        closure()
     }
 }
 
