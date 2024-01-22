@@ -6,7 +6,7 @@ def call(project,
         withCredentials([[
                 $class: 'VaultTokenCredentialBinding',
                 credentialsId: "VAULT_APP_ROLE",
-                vaultAddr: "$VAULT_ADDR"
+                vaultAddr: '$VAULT_ADDR'
         ]]) {
             def baseEnv = fetchEnvsFromVault(project, 'base', ".env")
             def baseEnvZone = fetchEnvsFromVault(project, 'base', ".env.${zone}")
