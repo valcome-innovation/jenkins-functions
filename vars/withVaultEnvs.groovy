@@ -1,22 +1,34 @@
 def call(project,
          app,
-         zone) {
+         zone,
+         closure) {
     withCredentials([[
         $class: 'VaultTokenCredentialBinding',
         credentialsId: "VAULT_APP_ROLE",
         vaultAddr: 'https://vault.valcome.dev'
     ]]) {
-        return fetchEnvsFromVault(project, app, ".env")
+        def baseEnv = fetchEnvsFromVault(project, 'base', ".env")
+        def baseEnvZone = fetchEnvsFromVault(project, 'base', ".env.${zone}")
+        def appEnv = fetchEnvsFromVault(project, app, ".env")
+        def appEnvZone = fetchEnvsFromVault(project, app, ".env.${zone}")
+
+        def fullEnv = baseEnv
+        fullEnv.putAll(baseEnvZone)
+        fullEnv.putAll(appEnv)
+        fullEnv.putAll(appEnvZone)
+
+        closure.delegate = [("VAULT_ENV"): fullEnv]
+        closure()
     }
 }
 
 def fetchEnvsFromVault(project, app, env) {
-    def res = sh script: '''
-    curl \
-    -X GET \
-    -H "X-Vault-Token: $VAULT_TOKEN" \
-    $VAULT_ADDR/v1/env/data/$project/$app/$env
-    ''', returnStdout: true
+    def vaultTokenHeader = 'X-Vault-Token: $VAULT_TOKEN'
+    def vaultUrl = '$VAULT_ADDR' + "/v1/env/data/$project/$app/$env"
+
+
+    def res = sh script: """curl -X GET -H "$vaultTokenHeader" $vaultUrl""",
+                 returnStdout: true
     def jsonRes = readJSON text: res
     return jsonRes.data.data
 }
