@@ -5,7 +5,7 @@ def call(project,
     withCredentials([
         [
             string(credentialsId: 'VAULT_ADDR', variable, 'VAULT_ADDR')
-        ]
+        ],
         [
             $class: 'VaultTokenCredentialBinding',
             credentialsId: "VAULT_APP_ROLE",
