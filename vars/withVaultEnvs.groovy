@@ -2,15 +2,11 @@ def call(project,
          app,
          zone,
          closure) {
-    withCredentials([[
-        string(credentialsId: 'VAULT_ADDR', variable: 'VAULT_ADDR')
-    ]]) {
+    withCredentials([string(credentialsId: 'VAULT_ADDR', variable: 'VAULT_ADDR')]) {
         withCredentials([
-            [
                 $class: 'VaultTokenCredentialBinding',
                 credentialsId: "VAULT_APP_ROLE",
                 vaultAddr: "$VAULT_ADDR"
-            ]
         ]) {
             def baseEnv = fetchEnvsFromVault(project, 'base', ".env")
             def baseEnvZone = fetchEnvsFromVault(project, 'base', ".env.${zone}")
