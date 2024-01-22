@@ -3,7 +3,7 @@ def call(project,
          zone,
          closure) {
     withCredentials([[
-        string(credentialsId: 'VAULT_ADDR', variable, 'VAULT_ADDR')
+        string(credentialsId: 'VAULT_ADDR', variable: 'VAULT_ADDR')
     ]]) {
         withCredentials([
             [
