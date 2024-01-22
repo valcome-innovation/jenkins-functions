@@ -1,27 +1,26 @@
 def call(SECRET_ID,
          PROJECT,
          APP,
-         ZONE) {
+         ZONE,
+         ENV_VARS) {
 
     def configuration = [
         vaultUrl: 'https://vault.valcome.dev',
         vaultCredentialId: "${SECRET_ID}",
     ]
 
+    def secretValues = ENV_VARS.collect { value ->
+        [ envVar: value, vaultKey: value ]
+    }
+
     def secrets = [
         [
             path: "env/${PROJECT}/${APP}/.env",
-            secretValues: [
-                [ envVar: 'DB_HOST', vaultKey: 'DB_HOST' ],
-                [ envVar: 'DB_NAME', vaultKey: 'DB_NAME' ]
-            ]
+            secretValues: secretValues
         ],
         [
             path: "env/${PROJECT}/${APP}/.env.${ZONE}",
-            secretValues: [
-                [ envVar: 'DB_HOST', vaultKey: 'DB_HOST' ],
-                [ envVar: 'DB_NAME', vaultKey: 'DB_NAME' ]
-            ]
+            secretValues: secretValues
         ],
     ]
 
