@@ -10,7 +10,14 @@ def call(SECRET_ID,
 
     def secrets = [
         [
-            path: "secret/env/${PROJECT}/${APP}",
+            path: "env/${PROJECT}/${APP}/.env",
+            secretValues: [
+                [ envVar: 'DB_HOST', vaultKey: 'DB_HOST' ],
+                [ envVar: 'DB_NAME', vaultKey: 'DB_NAME' ]
+            ]
+        ],
+        [
+            path: "env/${PROJECT}/${APP}/.env.${ZONE}",
             secretValues: [
                 [ envVar: 'DB_HOST', vaultKey: 'DB_HOST' ],
                 [ envVar: 'DB_NAME', vaultKey: 'DB_NAME' ]
