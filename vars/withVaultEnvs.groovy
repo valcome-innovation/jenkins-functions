@@ -30,7 +30,7 @@ def fetchEnvsFromVault(project,
     def vaultTokenHeader = 'X-Vault-Token: $VAULT_TOKEN'
     def vaultUrl = '$VAULT_ADDR' + "/v1/env/data/$project/$app/$env"
 
-    def textResponse = sh script: """curl -X GET -H "$vaultTokenHeader" $vaultUrl""",
+    def textResponse = sh script: """curl -sS -X GET -H "$vaultTokenHeader" $vaultUrl""",
                  returnStdout: true
     def jsonResponse = readJSON text: textResponse
     return jsonResponse.data.data
