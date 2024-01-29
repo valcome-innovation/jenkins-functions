@@ -1,6 +1,6 @@
 def call(map, filename) {
     def envLines = map.collect { key, value -> "$key=$value" }
-    def envContent = envLines.join('\n')
+    def envContent = envLines.join('\n') + '\n'
 
-    writeFile text: "${envContent}\n", file: filename
+    writeFile text: envContent, file: filename
 }
