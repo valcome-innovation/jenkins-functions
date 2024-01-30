@@ -3,22 +3,22 @@ package org.valcome
 class EternaljsDeployment implements Serializable {
 
     def steps
-    def deploymentConfigJson
-    String deploymentConfigContent
+    String deploymentConfigPath
 
     EternaljsDeployment(steps,
                         String deploymentConfigPath) {
         this.steps = steps
-        this.deploymentConfigJson = steps.readJSON file: deploymentConfigPath
-        this.deploymentConfigContent = steps.readFile file: deploymentConfigPath
-        this.validateRequiredJobParams()
-    }
+        this.deploymentConfigPath = deploymentConfigPath
 
-    String getBase64Config() {
-        return Base64.encoder.encodeToString(this.deploymentConfigContent.bytes)
     }
 
     def deployService(String service) {
+        this.validateRequiredJobParams()
+
+        def deploymentConfigJson = steps.readJSON file: deploymentConfigPath
+        String deploymentConfigContent = steps.readFile file: deploymentConfigPath
+        String base64Content = this.getBase64Config(deploymentConfigContent)
+
         steps.build job: 'eternal.js/service/deploy',
                 parameters: [
                         steps.string(name: 'APP', value: "${service}"),
@@ -27,10 +27,14 @@ class EternaljsDeployment implements Serializable {
                         steps.string(name: 'HOST', value: "${HOST}"),
                         steps.string(name: 'SSH', value: "${SSH}"),
                         steps.string(name: 'VAULT_APP_ROLE_SECRET_ID', value: "${VAULT_CREDENTIALS_ID}"),
-                        steps.string(name: 'PROJECT', value: "${this.deploymentConfigJson.project}"),
+                        steps.string(name: 'PROJECT', value: "${deploymentConfigJson.project}"),
                         steps.string(name: 'BRANCH', value: 'main'),
-                        steps.base64File(name: 'DEPLOYMENT_CONFIG', base64: this.getBase64Config())
+                        steps.base64File(name: 'DEPLOYMENT_CONFIG', base64: base64Content)
                 ]
+    }
+
+    String getBase64Config(String deploymentConfigContent) {
+        return Base64.encoder.encodeToString(deploymentConfigContent.bytes)
     }
 
     def validateRequiredJobParams() {
