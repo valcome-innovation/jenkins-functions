@@ -19,7 +19,8 @@ class EternaljsDeployment implements Serializable {
 
         steps.build job: 'eternal.js/service/deploy-all',
                 parameters: [
-                        steps.string(name: 'VERSION', value: "${steps.env.VERSION}"),
+                        steps.string(name: 'APP', value: null),
+                        steps.string(name: 'VERSION', value: null),
                         steps.string(name: 'ZONE', value: "${steps.env.ZONE}"),
                         steps.string(name: 'HOST', value: "${steps.env.HOST}"),
                         steps.string(name: 'SSH', value: "${steps.env.SSH}"),
