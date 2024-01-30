@@ -20,6 +20,14 @@ class EternaljsDeploymentConfig implements Serializable {
         }
     }
 
+    String getProject() {
+        return this.config.project
+    }
+
+    String getZone() {
+        return this.config.zone
+    }
+
     def getServices() {
         return this.config.services
     }
