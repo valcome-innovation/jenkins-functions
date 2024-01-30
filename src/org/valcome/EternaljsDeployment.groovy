@@ -14,7 +14,6 @@ class EternaljsDeployment implements Serializable {
     def deployAllServices() {
         this.validateRequiredJobParams()
 
-        def deploymentConfigJson = this.getDeploymentConfigJSON()
         String base64Content = this.getBase64Config()
 
         steps.build job: 'eternal.js/service/deploy',
@@ -25,7 +24,6 @@ class EternaljsDeployment implements Serializable {
                         steps.string(name: 'HOST', value: "${steps.env.HOST}"),
                         steps.string(name: 'SSH', value: "${steps.env.SSH}"),
                         steps.string(name: 'VAULT_APP_ROLE_SECRET_ID', value: "${steps.env.VAULT_CREDENTIALS_ID}"),
-                        steps.string(name: 'PROJECT', value: "${deploymentConfigJson.project}"),
                         steps.string(name: 'BRANCH', value: 'main'),
                         steps.base64File(name: 'DEPLOYMENT_CONFIG', base64: base64Content)
                 ]
@@ -34,26 +32,31 @@ class EternaljsDeployment implements Serializable {
     def deployService(String service) {
         this.validateRequiredJobParams()
 
-        def deploymentConfigJson = this.getDeploymentConfigJSON()
         String base64Content = this.getBase64Config()
 
         steps.build job: 'eternal.js/service/deploy',
-            parameters: [
-                steps.string(name: 'APP', value: "${service}"),
-                steps.string(name: 'VERSION', value: "${steps.env.VERSION}"),
-                steps.string(name: 'ZONE', value: "${steps.env.ZONE}"),
-                steps.string(name: 'HOST', value: "${steps.env.HOST}"),
-                steps.string(name: 'SSH', value: "${steps.env.SSH}"),
-                steps.string(name: 'VAULT_APP_ROLE_SECRET_ID', value: "${steps.env.VAULT_CREDENTIALS_ID}"),
-                steps.string(name: 'PROJECT', value: "${deploymentConfigJson.project}"),
-                steps.string(name: 'BRANCH', value: 'main'),
-                steps.base64File(name: 'DEPLOYMENT_CONFIG', base64: base64Content)
-            ]
+                parameters: [
+                        steps.string(name: 'APP', value: "${service}"),
+                        steps.string(name: 'VERSION', value: "${steps.env.VERSION}"),
+                        steps.string(name: 'ZONE', value: "${steps.env.ZONE}"),
+                        steps.string(name: 'HOST', value: "${steps.env.HOST}"),
+                        steps.string(name: 'SSH', value: "${steps.env.SSH}"),
+                        steps.string(name: 'VAULT_APP_ROLE_SECRET_ID', value: "${steps.env.VAULT_CREDENTIALS_ID}"),
+                        steps.string(name: 'BRANCH', value: 'main'),
+                        steps.base64File(name: 'DEPLOYMENT_CONFIG', base64: base64Content)
+                ]
     }
 
-    String getDeploymentConfigJSON() {
-        def json = steps.readJSON file: deploymentConfigPath
-        return json
+    def deployDatabase() {
+        String base64Content = this.getBase64Config()
+
+        steps.build job: 'eternal.js/db/deploy',
+                parameters: [
+                        steps.string(name: 'HOST', value: "${steps.env.HOST}"),
+                        steps.string(name: 'SSH', value: "${steps.env.SSH}"),
+                        steps.string(name: 'BRANCH', value: "${steps.env.BRANCH}"),
+                        steps.base64File(name: 'DEPLOYMENT_CONFIG', base64: base64Content)
+                ]
     }
 
     String getBase64Config() {
