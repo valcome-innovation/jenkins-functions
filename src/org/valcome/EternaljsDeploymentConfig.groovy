@@ -3,6 +3,7 @@ package org.valcome
 class EternaljsDeploymentConfig implements Serializable {
 
     def steps
+    def config
 
     EternaljsDeploymentConfig(steps) {
         this.steps = steps
@@ -14,8 +15,22 @@ class EternaljsDeploymentConfig implements Serializable {
         }
 
         steps.withFileParameter("DEPLOYMENT_CONFIG") {
-            def deploymentConfigJSON = steps.readJSON file: steps.env.DEPLOYMENT_CONFIG
-            return deploymentConfigJSON
+            this.config = steps.readJSON file: steps.env.DEPLOYMENT_CONFIG
+            return this.config
+        }
+    }
+
+    def getServices() {
+        return this.config.services
+    }
+
+    def getService(String app) {
+        return this.getServices().find { it.app == app }
+    }
+
+    def getServiceDeploymentConfig(String app) {
+        return this.getService(app).deployment.collectEntries { key, value ->
+            [(key.toString().toUpperCase()): value]
         }
     }
 }
