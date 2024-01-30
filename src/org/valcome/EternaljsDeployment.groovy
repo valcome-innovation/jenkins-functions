@@ -22,11 +22,11 @@ class EternaljsDeployment implements Serializable {
         steps.build job: 'eternal.js/service/deploy',
                 parameters: [
                         steps.string(name: 'APP', value: "${service}"),
-                        steps.string(name: 'VERSION', value: "${VERSION}"),
-                        steps.string(name: 'ZONE', value: "${ZONE}"),
-                        steps.string(name: 'HOST', value: "${HOST}"),
-                        steps.string(name: 'SSH', value: "${SSH}"),
-                        steps.string(name: 'VAULT_APP_ROLE_SECRET_ID', value: "${VAULT_CREDENTIALS_ID}"),
+                        steps.string(name: 'VERSION', value: "${steps.env.VERSION}"),
+                        steps.string(name: 'ZONE', value: "${steps.env.ZONE}"),
+                        steps.string(name: 'HOST', value: "${steps.env.HOST}"),
+                        steps.string(name: 'SSH', value: "${steps.env.SSH}"),
+                        steps.string(name: 'VAULT_APP_ROLE_SECRET_ID', value: "${steps.env.VAULT_CREDENTIALS_ID}"),
                         steps.string(name: 'PROJECT', value: "${deploymentConfigJson.project}"),
                         steps.string(name: 'BRANCH', value: 'main'),
                         steps.base64File(name: 'DEPLOYMENT_CONFIG', base64: base64Content)
