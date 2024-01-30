@@ -38,19 +38,19 @@ class EternaljsDeployment implements Serializable {
     }
 
     def validateRequiredJobParams() {
-        if (!HOST) {
+        if (!steps.env.HOST) {
             steps.error "HOST not defined"
         }
-        if (!VERSION) {
+        if (!steps.env.VERSION) {
             steps.error "VERSION not defined"
         }
-        if (!ZONE) {
+        if (!steps.env.ZONE) {
             steps.error "ZONE not defined"
         }
-        if (!SSH) {
+        if (!steps.env.SSH) {
             steps.error "SSH not defined"
         }
-        if (!VAULT_CREDENTIALS_ID) {
+        if (!steps.env.VAULT_CREDENTIALS_ID) {
             steps.error "VAULT_CREDENTIALS_ID not defined"
         }
     }
