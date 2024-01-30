@@ -1,3 +1,4 @@
+package org.valcome
 
 class EternaljsDeploymentConfig implements Serializable {
 
