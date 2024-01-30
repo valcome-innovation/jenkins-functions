@@ -9,7 +9,6 @@ class EternaljsDeployment implements Serializable {
                         String deploymentConfigPath) {
         this.steps = steps
         this.deploymentConfigPath = deploymentConfigPath
-
     }
 
     def deployAllServices() {
@@ -64,9 +63,6 @@ class EternaljsDeployment implements Serializable {
     def validateRequiredJobParams() {
         if (!steps.env.HOST) {
             steps.error "HOST not defined"
-        }
-        if (!steps.env.VERSION) {
-            steps.error "VERSION not defined"
         }
         if (!steps.env.ZONE) {
             steps.error "ZONE not defined"
