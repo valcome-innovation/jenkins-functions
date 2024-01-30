@@ -15,29 +15,29 @@ class EternaljsDeploymentConfig implements Serializable {
         }
 
         steps.withFileParameter("DEPLOYMENT_CONFIG") {
-            this.config = steps.readJSON file: steps.env.DEPLOYMENT_CONFIG
-            return this.config
+            config = steps.readJSON file: steps.env.DEPLOYMENT_CONFIG
+            return config
         }
     }
 
     String getProject() {
-        return this.config.project
+        return config.project
     }
 
     String getZone() {
-        return this.config.zone
+        return config.zone
     }
 
     def getServices() {
-        return this.config.services
+        return config.services
     }
 
     def getService(String app) {
-        return this.getServices().find { it.app == app }
+        return getServices().find { it.app == app }
     }
 
     def getServiceDeploymentConfig(String app) {
-        return this.getService(app).deployment.collectEntries { key, value ->
+        return getService(app).deployment.collectEntries { key, value ->
             [(key.toString().toUpperCase()): value]
         }
     }
