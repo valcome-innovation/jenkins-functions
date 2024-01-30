@@ -17,7 +17,7 @@ class EternaljsDeployment implements Serializable {
         def deploymentConfigJson = this.getDeploymentConfigJSON()
         String base64Content = this.getBase64Config()
 
-        steps.build job: 'eternal.js/service/deploy-all',
+        steps.build job: 'eternal.js/service/deploy',
                 parameters: [
                         steps.string(name: 'APP', value: null),
                         steps.string(name: 'VERSION', value: null),
