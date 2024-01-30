@@ -28,16 +28,38 @@ class EternaljsDeploymentConfig implements Serializable {
         return this.config.zone
     }
 
+    def getDatabase() {
+        return this.config.database
+    }
+
+    def getDatabaseConfig(String app) {
+        this.config.database.find { it.app == app }
+    }
+
+    String getDatabaseVersion(String app) {
+        return this.getDatabaseConfig(app).version
+    }
+
+    def getDatabaseDeploymentConfig(String app) {
+        return this.getDatabaseConfig(app).deployment.collectEntries { key, value ->
+            [(key.toString().toUpperCase()): value]
+        }
+    }
+
     def getServices() {
         return this.config.services
     }
 
-    def getService(String app) {
+    def getServiceConfig(String app) {
         return this.getServices().find { it.app == app }
     }
 
+    String getServiceVersion(String app) {
+        return this.getServiceConfig(app).version
+    }
+
     def getServiceDeploymentConfig(String app) {
-        return this.getService(app).deployment.collectEntries { key, value ->
+        return this.getServiceConfig(app).deployment.collectEntries { key, value ->
             [(key.toString().toUpperCase()): value]
         }
     }
