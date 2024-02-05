@@ -127,8 +127,8 @@ class AWSCodebuildBatch implements Serializable {
                 def conclusion = conclusionMap[buildStatus]
 
                 if (isPullRequest()) {
-                    def detailsURL = getDetailsUrl(title)
-                    steps.publishGithubCheck(title, title, status, conclusion, '', '', detailsURL)
+                    def detailsURL = getDetailsUrl(title, runningBatch)
+                    steps.publishGithubCheck(title, title, status, conclusion, buildStatus, "", detailsURL)
                 } else {
                     steps.echo "${title} is ${status}, conclusion is ${conclusion}"
                 }
@@ -147,11 +147,11 @@ class AWSCodebuildBatch implements Serializable {
         return steps.env.CHANGE_ID != null
     }
 
-    def getDetailsUrl(title) {
+    def getDetailsUrl(title, batch) {
         if (title.toLowerCase().contains("sonar")) {
             return "https://sonar.valcome.dev/dashboard?id=${buildParams.project}"
         } else {
-            return ''
+            return "https://eu-central-1.console.aws.amazon.com/codesuite/codebuild/487554623251/projects/${buildParams.project}/batch/${batch.id}?region=eu-central-1"
         }
     }
 
