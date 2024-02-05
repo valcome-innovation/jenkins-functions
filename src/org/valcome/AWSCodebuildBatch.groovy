@@ -121,16 +121,17 @@ class AWSCodebuildBatch implements Serializable {
 
             for (buildStep in buildSteps) {
                 def ignoreFailure = buildStep.ignoreFailure
-                def title = buildStep.identifier.replaceAll("_", " ").capitalize()
+                def name = buildStep.identifier.replaceAll("_", " ").capitalize()
                 def buildStatus = isSkipped(buildStep) ? "SKIPPED" : buildStep.currentBuildSummary.buildStatus
                 def status = statusMap[buildStatus]
                 def conclusion = conclusionMap[buildStatus]
+                def title = "${name} ${conclusion}"
 
                 if (isPullRequest()) {
-                    def detailsURL = getDetailsUrl(title, runningBatch)
-                    steps.publishGithubCheck(title, title, status, conclusion, buildStatus, "", detailsURL)
+                    def detailsURL = getDetailsUrl(name, runningBatch)
+                    steps.publishGithubCheck(name, title, status, conclusion, buildStatus, "", detailsURL)
                 } else {
-                    steps.echo "${title} is ${status}, conclusion is ${conclusion}"
+                    steps.echo "${name} is ${status}, conclusion is ${conclusion}"
                 }
             }
         }
