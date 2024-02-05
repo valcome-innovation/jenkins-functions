@@ -120,13 +120,14 @@ class AWSCodebuildBatch implements Serializable {
             def buildSteps = buildGroups.findAll { it.identifier != "DOWNLOAD_SOURCE" };
 
             for (buildStep in buildSteps) {
-                def buildStatus = isSkipped(buildStep) ? "SKIPPED" : buildStep.currentBuildSummary.buildStatus
+                def isSkipped = isSkipped(buildStep)
+                def buildStatus = isSkipped ? "SKIPPED" : buildStep.currentBuildSummary.buildStatus
                 def name = buildStep.identifier.replaceAll("_", " ").capitalize()
                 def title = "Status: ${buildStatus}"
                 def status = statusMap[buildStatus]
                 def conclusion = conclusionMap[buildStatus]
 
-                if (isPullRequest()) {
+                if (!isSkipped && isPullRequest()) {
                     def detailsURL = getDetailsUrl(name, runningBatch)
                     steps.publishGithubCheck(name, title, status, conclusion, buildStatus, "", detailsURL)
                 } else {
@@ -149,9 +150,9 @@ class AWSCodebuildBatch implements Serializable {
 
     def getDetailsUrl(title, batch) {
         if (title.toLowerCase().contains("sonar")) {
-            return "https://sonar.valcome.dev/dashboard?id=${buildParams.project}"
+            return "https://sonar.valcome.dev/dashboard?id=${batch.projectName}"
         } else {
-            return "https://eu-central-1.console.aws.amazon.com/codesuite/codebuild/487554623251/projects/${buildParams.project}/batch/${batch.id}?region=eu-central-1"
+            return "https://eu-central-1.console.aws.amazon.com/codesuite/codebuild/487554623251/projects/${batch.projectName}/batch/${batch.id}?region=eu-central-1"
         }
     }
 
