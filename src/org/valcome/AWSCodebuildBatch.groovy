@@ -10,9 +10,9 @@ class AWSCodebuildBatch implements Serializable {
                       version = null,
                       app = null,
                       environment = null,
-                      skipTests = 'false',
-                      skipSonar = 'true',
-                      skipPublish = null) {
+                      skipTests = false,
+                      skipSonar = true,
+                      skipPublish = false) {
         this.steps = steps
         this.buildParams = [
             project: project,
@@ -75,19 +75,7 @@ class AWSCodebuildBatch implements Serializable {
         }
 
         def endStatus = runningBatch.buildBatchStatus
-
-        if (endStatus == "STOPPED") {
-            steps.currentBuild.result = 'ABORTED'
-            steps.error("Build aborted")
-        } else if (endStatus == "COMPLETED") {
-            steps.currentBuild.result = 'UNSTABLE'
-            steps.error("Build unstable")
-        } else if (endStatus == "FAILED") {
-            steps.currentBuild.result = 'FAILURE'
-            steps.error("Build failed")
-        } else {
-            steps.currentBuild.result = 'SUCCESS'
-        }
+        updateBuildResult(endStatus)
 
         steps.echo "Build Finished: ${steps.currentBuild.result}"
     }
@@ -110,7 +98,8 @@ class AWSCodebuildBatch implements Serializable {
             IN_PROGRESS: "IN_PROGRESS",
             STOPPED: "COMPLETED",
             SUCCEEDED: "COMPLETED",
-            TIMED_OUT: "COMPLETED"
+            TIMED_OUT: "COMPLETED",
+            SKIPPED: "COMPLETED"
         ]
 
         def conclusionMap = [
@@ -120,7 +109,8 @@ class AWSCodebuildBatch implements Serializable {
             FAILED: "FAILURE",
             FAULT: "FAILURE",
             SUCCEEDED: "SUCCESS",
-            TIMED_OUT: "TIME_OUT"
+            TIMED_OUT: "TIME_OUT",
+            SKIPPED: "SKIPPED"
         ]
 
         def buildGroups = runningBatch.buildGroups
@@ -131,11 +121,12 @@ class AWSCodebuildBatch implements Serializable {
 
             for (buildStep in buildSteps) {
                 def ignoreFailure = buildStep.ignoreFailure
-                def status = statusMap[buildStep.currentBuildSummary.buildStatus]
-                def conclusion = conclusionMap[buildStep.currentBuildSummary.buildStatus]
                 def title = buildStep.identifier.replaceAll("_", " ").capitalize()
+                def buildStatus = isSkipped(buildStep) ? "SKIPPED" : buildStep.currentBuildSummary.buildStatus
+                def status = statusMap[buildStatus]
+                def conclusion = conclusionMap[buildStatus]
 
-                if (steps.env.CHANGE_ID != null) {
+                if (isPullRequest()) {
                     def detailsURL = getDetailsUrl(title)
                     steps.publishGithubCheck(title, title, status, conclusion, '', '', detailsURL)
                 } else {
@@ -145,11 +136,36 @@ class AWSCodebuildBatch implements Serializable {
         }
     }
 
+    boolean isSkipped(buildStep) {
+        return (!buildStep.identifier.toLowerCase().contains('test') || !buildParams.skipTests) &&
+               (!buildStep.identifier.toLowerCase().contains('sonar') || !buildParams.skipSonar) &&
+               (!buildStep.identifier.toLowerCase().contains('publish') || !buildParams.skipPublish)
+    }
+
+    boolean isPullRequest() {
+        return steps.env.CHANGE_ID != null
+    }
+
     def getDetailsUrl(title) {
         if (title.toLowerCase().contains("sonar")) {
             return "https://sonar.valcome.dev/dashboard?id=${buildParams.project}"
         } else {
             return ''
+        }
+    }
+
+    def updateBuildResult(endStatus) {
+        if (endStatus == "STOPPED") {
+            steps.currentBuild.result = 'ABORTED'
+            steps.error("Build aborted")
+        } else if (endStatus == "COMPLETED") {
+            steps.currentBuild.result = 'UNSTABLE'
+            steps.error("Build unstable")
+        } else if (endStatus == "FAILED") {
+            steps.currentBuild.result = 'FAILURE'
+            steps.error("Build failed")
+        } else {
+            steps.currentBuild.result = 'SUCCESS'
         }
     }
 }
