@@ -137,9 +137,10 @@ class AWSCodebuildBatch implements Serializable {
     }
 
     boolean isSkipped(buildStep) {
-        return (!buildStep.identifier.toLowerCase().contains('test') || !buildParams.skipTests) &&
-               (!buildStep.identifier.toLowerCase().contains('sonar') || !buildParams.skipSonar) &&
-               (!buildStep.identifier.toLowerCase().contains('publish') || !buildParams.skipPublish)
+        def title = buildStep.identifier.toLowerCase()
+        return (title.contains('test') && buildParams.skipTests) ||
+               (title.contains('sonar') && buildParams.skipSonar) ||
+               (title.contains('publish') && buildParams.skipPublish)
     }
 
     boolean isPullRequest() {
