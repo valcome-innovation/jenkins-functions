@@ -110,7 +110,7 @@ class AWSCodebuildBatch implements Serializable {
             FAULT: "FAILURE",
             SUCCEEDED: "SUCCESS",
             TIMED_OUT: "TIME_OUT",
-            SKIPPED: "SKIPPED"
+            SKIPPED: "NEUTRAL"
         ]
 
         def buildGroups = runningBatch.buildGroups
