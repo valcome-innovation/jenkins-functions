@@ -24,7 +24,7 @@ class EternaljsDeployment implements Serializable {
                         steps.string(name: 'HOST', value: "${steps.env.HOST}"),
                         steps.string(name: 'SSH', value: "${steps.env.SSH}"),
                         steps.string(name: 'VAULT_APP_ROLE_SECRET_ID', value: "${steps.env.VAULT_CREDENTIALS_ID}"),
-                        steps.string(name: 'BRANCH', value: 'main'),
+                        steps.string(name: 'BRANCH', value: "${steps.env.BRANCH}"),
                         steps.base64File(name: 'DEPLOYMENT_CONFIG', base64: base64Content)
                 ]
     }
@@ -42,7 +42,7 @@ class EternaljsDeployment implements Serializable {
                         steps.string(name: 'HOST', value: "${steps.env.HOST}"),
                         steps.string(name: 'SSH', value: "${steps.env.SSH}"),
                         steps.string(name: 'VAULT_APP_ROLE_SECRET_ID', value: "${steps.env.VAULT_CREDENTIALS_ID}"),
-                        steps.string(name: 'BRANCH', value: 'main'),
+                        steps.string(name: 'BRANCH', value: "${steps.env.BRANCH}"),
                         steps.base64File(name: 'DEPLOYMENT_CONFIG', base64: base64Content)
                 ]
     }
