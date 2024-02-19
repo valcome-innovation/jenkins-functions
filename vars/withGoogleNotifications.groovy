@@ -4,6 +4,6 @@ def call(envs = '', closure) {
 
         sendBuildMessage('', envs)
     } catch (exc) {
-        handleBuildError(exc.toString())
+        handleBuildError("💥 " + exc.toString())
     }
 }
