@@ -37,7 +37,7 @@ class EternaljsDeploymentConfig implements Serializable {
     }
 
     String getDatabaseVersion(String app) {
-        return this.getDatabaseConfig(app).version
+        return this.getDatabaseConfig(app).appVersion
     }
 
     def getDatabaseDeploymentConfig(String app) {
@@ -55,7 +55,7 @@ class EternaljsDeploymentConfig implements Serializable {
     }
 
     String getServiceVersion(String app) {
-        return this.getServiceConfig(app).version
+        return this.getServiceConfig(app).appVersion
     }
 
     def getServiceDeploymentConfig(String app) {
