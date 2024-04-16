@@ -63,4 +63,12 @@ class EternaljsDeploymentConfig implements Serializable {
             [(key.toString().toUpperCase()): value]
         }
     }
+
+    def getServiceEnvVersions(String app) {
+        return this.getServiceConfig(app).envVersions
+    }
+
+    def getBaseEnvVersions(String app) {
+        return this.config.envVersions
+    }
 }
