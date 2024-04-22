@@ -1,9 +1,5 @@
 package org.valcome
 
-class EnvVersion {
-    def base
-    def zone
-}
 
 class EternaljsDeploymentConfig implements Serializable {
 
@@ -45,7 +41,7 @@ class EternaljsDeploymentConfig implements Serializable {
         return this.getDatabaseConfig(app).appVersion
     }
 
-    EnvVersion getDatabaseEnvVersions(String app) {
+    def getDatabaseEnvVersions(String app) {
         return this.getDatabaseConfig(app).envVersions
     }
 
@@ -73,7 +69,7 @@ class EternaljsDeploymentConfig implements Serializable {
         }
     }
 
-    EnvVersion getServiceEnvVersions(String app) {
+    def getServiceEnvVersions(String app) {
         return this.getServiceConfig(app).envVersions
     }
 
