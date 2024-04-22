@@ -1,7 +1,8 @@
 def call(project,
          app,
          zone,
-         version = 'latest',
+         baseVersion = 'latest',
+         zoneVersion = 'latest',
          closure) {
     withCredentials([[
             $class: 'VaultTokenCredentialBinding',
@@ -10,14 +11,14 @@ def call(project,
     ]]) {
         def fullEnv = [:]
 
-        fullEnv.putAll(fetchEnvsFromVault(project, 'base', ".env", version))
+        fullEnv.putAll(fetchEnvsFromVault(project, 'base', ".env", baseVersion))
         if (zone != null) {
-            fullEnv.putAll(fetchEnvsFromVault(project, 'base', ".env.${zone}", version))
+            fullEnv.putAll(fetchEnvsFromVault(project, 'base', ".env.${zone}", baseVersion))
         }
 
-        fullEnv.putAll(fetchEnvsFromVault(project, app, ".env", version))
+        fullEnv.putAll(fetchEnvsFromVault(project, app, ".env", zoneVersion))
         if (zone != null) {
-            fullEnv.putAll(fetchEnvsFromVault(project, app, ".env.${zone}", version))
+            fullEnv.putAll(fetchEnvsFromVault(project, app, ".env.${zone}", zoneVersion))
         }
 
         closure.delegate = [("VAULT_ENV"): fullEnv]
