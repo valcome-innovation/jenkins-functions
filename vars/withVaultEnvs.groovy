@@ -1,8 +1,8 @@
 def call(project,
          app,
          zone,
-         baseVersion = 'latest',
-         zoneVersion = 'latest',
+         baseVersion = null,
+         zoneVersion = null,
          closure) {
     withCredentials([[
             $class: 'VaultTokenCredentialBinding',
@@ -29,9 +29,11 @@ def call(project,
 def fetchEnvsFromVault(project,
                        app,
                        env,
-                       version = 'latest') {
+                       version = null) {
     def vaultTokenHeader = 'X-Vault-Token: $VAULT_TOKEN'
-    def vaultUrl = '$VAULT_ADDR' + "/v1/env/data/$project/$app/$env?version=$version"
+    def baseEnvPath = "/v1/env/data/$project/$app/$env"
+    def envPath = version ? "$baseEnvPath?version=$version" : baseEnvPath
+    def vaultUrl = '$VAULT_ADDR' + "$envPath"
 
     def textResponse = sh script: """curl -sS -X GET -H "$vaultTokenHeader" $vaultUrl""",
                  returnStdout: true
