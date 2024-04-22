@@ -73,7 +73,7 @@ class EternaljsDeploymentConfig implements Serializable {
         return this.getServiceConfig(app).envVersions
     }
 
-    def getBaseEnvVersions(String app) {
+    def getBaseEnvVersions() {
         return this.config.envVersions
     }
 }
