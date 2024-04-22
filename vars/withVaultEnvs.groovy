@@ -1,6 +1,7 @@
 def call(project,
          app,
          zone,
+         version = 'latest',
          closure) {
     withCredentials([[
             $class: 'VaultTokenCredentialBinding',
@@ -9,14 +10,14 @@ def call(project,
     ]]) {
         def fullEnv = [:]
 
-        fullEnv.putAll(fetchEnvsFromVault(project, 'base', ".env"))
+        fullEnv.putAll(fetchEnvsFromVault(project, 'base', ".env", version))
         if (zone != null) {
-            fullEnv.putAll(fetchEnvsFromVault(project, 'base', ".env.${zone}"))
+            fullEnv.putAll(fetchEnvsFromVault(project, 'base', ".env.${zone}", version))
         }
 
-        fullEnv.putAll(fetchEnvsFromVault(project, app, ".env"))
+        fullEnv.putAll(fetchEnvsFromVault(project, app, ".env", version))
         if (zone != null) {
-            fullEnv.putAll(fetchEnvsFromVault(project, app, ".env.${zone}"))
+            fullEnv.putAll(fetchEnvsFromVault(project, app, ".env.${zone}", version))
         }
 
         closure.delegate = [("VAULT_ENV"): fullEnv]
@@ -26,9 +27,10 @@ def call(project,
 
 def fetchEnvsFromVault(project,
                        app,
-                       env) {
+                       env,
+                       version = 'latest') {
     def vaultTokenHeader = 'X-Vault-Token: $VAULT_TOKEN'
-    def vaultUrl = '$VAULT_ADDR' + "/v1/env/data/$project/$app/$env"
+    def vaultUrl = '$VAULT_ADDR' + "/v1/env/data/$project/$app/$env?version=$version"
 
     def textResponse = sh script: """curl -sS -X GET -H "$vaultTokenHeader" $vaultUrl""",
                  returnStdout: true
