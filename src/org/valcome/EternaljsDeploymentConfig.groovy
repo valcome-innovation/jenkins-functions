@@ -29,12 +29,16 @@ class EternaljsDeploymentConfig implements Serializable {
         return this.config.zone
     }
 
+    def eternaljs() {
+        return this.config.eternaljs
+    }
+
     def getDatabase() {
-        return this.config.database
+        return this.eternaljs().database
     }
 
     def getDatabaseConfig(String app) {
-        this.config.database.find { it.app == app }
+        this.getDatabase().find { it.app == app }
     }
 
     String getDatabaseVersion(String app) {
@@ -52,7 +56,7 @@ class EternaljsDeploymentConfig implements Serializable {
     }
 
     def getServices() {
-        return this.config.services
+        return this.eternaljs().services
     }
 
     def getServiceConfig(String app) {
@@ -74,14 +78,14 @@ class EternaljsDeploymentConfig implements Serializable {
     }
 
     def getBaseEnvVersions() {
-        return this.config.envVersions
+        return this.eternaljs().envVersions
     }
 
     String getSSHCredentialId() {
-        return this.config.ssh.credentialsId
+        return this.eternaljs().ssh.credentialsId
     }
 
     String getSSHHost() {
-        return this.config.ssh.host
+        return this.eternaljs().ssh.host
     }
 }
