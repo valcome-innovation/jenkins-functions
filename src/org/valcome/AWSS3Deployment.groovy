@@ -18,7 +18,8 @@ class AWSS3Deployment implements Serializable {
         ]
     }
 
-    def deploy(srcBucket, destBucket) {
+    def deploy(String srcBucket,
+               String destBucket) {
         def deployCommand = """
         aws s3 cp \
         s3://${srcBucket}/artifacts/${params.image}/${params.env}/${params.version} \
@@ -27,6 +28,17 @@ class AWSS3Deployment implements Serializable {
         """
 
         steps.sh script: "${deployCommand}", returnStdout: true
+    }
+
+    def deployEnvFile(String envFilePath,
+                      String destBucket) {
+        def command = """
+        aws s3 cp \
+        ${envFilePath}\
+        s3://${destBucket}/
+        """
+
+        steps.sh script: "${command}", returnStdout: true
     }
 
     private def cleanDeploymentBucket(bucket) {
