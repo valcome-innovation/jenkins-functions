@@ -76,4 +76,12 @@ class EternaljsDeploymentConfig implements Serializable {
     def getBaseEnvVersions() {
         return this.config.envVersions
     }
+
+    String getSSHCredentialId() {
+        return this.config.ssh.credentialsId
+    }
+
+    String getSSHHost() {
+        return this.config.ssh.host
+    }
 }

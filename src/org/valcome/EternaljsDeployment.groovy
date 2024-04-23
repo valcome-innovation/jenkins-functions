@@ -21,8 +21,8 @@ class EternaljsDeployment implements Serializable {
                         steps.string(name: 'APP', value: null),
                         steps.string(name: 'VERSION', value: null),
                         steps.string(name: 'ZONE', value: "${steps.env.ZONE}"),
-                        steps.string(name: 'HOST', value: "${steps.env.HOST}"),
-                        steps.string(name: 'SSH', value: "${steps.env.SSH}"),
+                        steps.string(name: 'HOST', value: null),
+                        steps.string(name: 'SSH', value: null),
                         steps.string(name: 'BRANCH', value: "${steps.env.BRANCH}"),
                         steps.base64File(name: 'DEPLOYMENT_CONFIG', base64: base64Content)
                 ]
@@ -38,8 +38,8 @@ class EternaljsDeployment implements Serializable {
                         steps.string(name: 'APP', value: "${service}"),
                         steps.string(name: 'VERSION', value: "${steps.env.VERSION}"),
                         steps.string(name: 'ZONE', value: "${steps.env.ZONE}"),
-                        steps.string(name: 'HOST', value: "${steps.env.HOST}"),
-                        steps.string(name: 'SSH', value: "${steps.env.SSH}"),
+                        steps.string(name: 'HOST', value: null),
+                        steps.string(name: 'SSH', value: null),
                         steps.string(name: 'BRANCH', value: "${steps.env.BRANCH}"),
                         steps.base64File(name: 'DEPLOYMENT_CONFIG', base64: base64Content)
                 ]
@@ -50,8 +50,8 @@ class EternaljsDeployment implements Serializable {
 
         steps.build job: 'eternal.js/db/deploy',
                 parameters: [
-                        steps.string(name: 'HOST', value: "${steps.env.HOST}"),
-                        steps.string(name: 'SSH', value: "${steps.env.SSH}"),
+                        steps.string(name: 'HOST', value: null),
+                        steps.string(name: 'SSH', value: null),
                         steps.string(name: 'BRANCH', value: "${steps.env.BRANCH}"),
                         steps.base64File(name: 'DEPLOYMENT_CONFIG', base64: base64Content)
                 ]
@@ -63,14 +63,8 @@ class EternaljsDeployment implements Serializable {
     }
 
     def validateRequiredJobParams() {
-        if (!steps.env.HOST) {
-            steps.error "HOST not defined"
-        }
         if (!steps.env.ZONE) {
             steps.error "ZONE not defined"
-        }
-        if (!steps.env.SSH) {
-            steps.error "SSH not defined"
         }
     }
 }
