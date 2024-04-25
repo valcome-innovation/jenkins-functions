@@ -35,7 +35,7 @@ class AWSS3Deployment implements Serializable {
         def command = """
         aws s3 cp \
         ${envFilePath}\
-        s3://${destBucket}/
+        s3://${destBucket}/${envFilePath}
         """
 
         steps.sh script: "${command}", returnStdout: true
