@@ -7,12 +7,14 @@ class AWSCodebuild implements Serializable {
     AWSCodebuild(steps = null,
                  project = null,
                  branch = 'main',
-                 version = null) {
+                 version = null,
+                 skipPublish = null) {
         this.steps = steps
         this.buildParams = [
             project: project,
             branch: branch,
-            version: version
+            version: version,
+            skipPublish: skipPublish
         ]
     }
 
@@ -28,6 +30,10 @@ class AWSCodebuild implements Serializable {
         --source-version ${buildParams.branch} \
         --environment-variables-override \
         name=TAG,value=${buildParams.version}"""
+
+        if (buildParams.skipPublish != null) {
+            customCommand += " name=SKIP_PUBLISH,value=${buildParams.skipPublish} "
+        }
 
         def result = steps.sh script: "${customCommand}", returnStdout: true
         def json = steps.readJSON text: "" + result
