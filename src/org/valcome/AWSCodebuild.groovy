@@ -57,7 +57,7 @@ class AWSCodebuild implements Serializable {
         def endStatus = runningBuild.buildStatus
 
         if (isPullRequest()) {
-            steps.publishGithubCheck("Verify", "Verify", endStatus, getConclusion(endStatus))
+            steps.publishGithubCheck("Verify", "Verify", getCheckStatus(endStatus), getCheckConclusion(endStatus))
         }
 
         if (endStatus == "STOPPED") {
@@ -87,7 +87,22 @@ class AWSCodebuild implements Serializable {
         return steps.env.CHANGE_ID != null
     }
 
-    String getConclusion(String buildStatus) {
+    String getCheckStatus(String buildStatus) {
+        def statusMap = [
+                PENDING: "QUEUED",
+                FAILED: "COMPLETED",
+                FAULT: "COMPLETED",
+                IN_PROGRESS: "IN_PROGRESS",
+                STOPPED: "COMPLETED",
+                SUCCEEDED: "COMPLETED",
+                TIMED_OUT: "COMPLETED",
+                SKIPPED: "COMPLETED"
+        ]
+
+        return statusMap[buildStatus]
+    }
+
+    String getCheckConclusion(String buildStatus) {
         def conclusionMap = [
                 PENDING: "NONE",
                 IN_PROGRESS: "NONE",
