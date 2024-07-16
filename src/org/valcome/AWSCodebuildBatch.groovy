@@ -122,7 +122,7 @@ class AWSCodebuildBatch implements Serializable {
             for (buildStep in buildSteps) {
                 def isSkipped = isSkipped(buildStep)
                 def buildStatus = isSkipped ? "SKIPPED" : buildStep.currentBuildSummary.buildStatus
-                def name = buildStep.identifier.replaceAll("_", " ").capitalize()
+                def name = getBuildStepName(buildStep.identifier)
                 def title = "Status: ${buildStatus}"
                 def status = statusMap[buildStatus]
                 def conclusion = conclusionMap[buildStatus]
@@ -146,6 +146,14 @@ class AWSCodebuildBatch implements Serializable {
 
     boolean isPullRequest() {
         return steps.env.CHANGE_ID != null
+    }
+
+    String getBuildStepName(String identifier) {
+        String name = identifier.replaceAll("_", " ").capitalize()
+
+        return name != 'Build' || buildParams.app == null
+                ? name
+                : "${name} ${buildParams.app} "
     }
 
     def getDetailsUrl(title, batch) {
