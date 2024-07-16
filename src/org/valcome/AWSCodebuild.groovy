@@ -41,6 +41,10 @@ class AWSCodebuild implements Serializable {
     }
 
     def awaitBuild(build_id) {
+        if (isPullRequest()) {
+            steps.publishGithubCheck("Verify", "Verify", "IN_PROGRESS", "NONE")
+        }
+
         def endPhase = ['SUCCEEDED', 'COMPLETED', 'STOPPED', 'FAILED']
         def runningBuild = getBuildStatus(build_id)
 
@@ -51,6 +55,10 @@ class AWSCodebuild implements Serializable {
         }
 
         def endStatus = runningBuild.buildStatus
+
+        if (isPullRequest()) {
+            steps.publishGithubCheck("Verify", "Verify", endStatus, getConclusion(endStatus))
+        }
 
         if (endStatus == "STOPPED") {
             steps.currentBuild.result = 'ABORTED'
@@ -73,5 +81,24 @@ class AWSCodebuild implements Serializable {
         def json = steps.readJSON text: "" + result
         def runningBuild = json.builds[0]
         return runningBuild
+    }
+
+    boolean isPullRequest() {
+        return steps.env.CHANGE_ID != null
+    }
+
+    String getConclusion(String buildStatus) {
+        def conclusionMap = [
+                PENDING: "NONE",
+                IN_PROGRESS: "NONE",
+                STOPPED: "CANCELED",
+                FAILED: "FAILURE",
+                FAULT: "FAILURE",
+                SUCCEEDED: "SUCCESS",
+                TIMED_OUT: "TIME_OUT",
+                SKIPPED: "NEUTRAL"
+        ]
+
+        return conclusionMap[buildStatus]
     }
 }
