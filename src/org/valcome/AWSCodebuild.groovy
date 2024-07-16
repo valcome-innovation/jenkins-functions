@@ -57,7 +57,7 @@ class AWSCodebuild implements Serializable {
         def endStatus = runningBuild.buildStatus
 
         if (isPullRequest()) {
-            steps.publishGithubCheck("Verify", "Verify", getCheckStatus(endStatus), getCheckConclusion(endStatus))
+            steps.publishGithubCheck("Verify", "Verify", getCheckStatus(endStatus), getCheckConclusion(endStatus), "", "", getCheckDetailsUrl(build_id))
         }
 
         if (endStatus == "STOPPED") {
@@ -115,5 +115,9 @@ class AWSCodebuild implements Serializable {
         ]
 
         return conclusionMap[buildStatus]
+    }
+
+    String getCheckDetailsUrl(String buildId) {
+        return "https://eu-central-1.console.aws.amazon.com/codesuite/codebuild/487554623251/projects/${buildParams.project}/build/${buildId}/?region=eu-central-1"
     }
 }
