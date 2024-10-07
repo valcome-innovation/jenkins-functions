@@ -6,6 +6,7 @@ class AWSCloudFrontFunctionDeployment implements Serializable {
 
     AWSCloudFrontFunctionDeployment(steps = null,
                                     function = null) {
+        this.steps = steps
         this.function = function
     }
 
