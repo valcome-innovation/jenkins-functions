@@ -43,6 +43,17 @@ class AWSCloudFrontFunctionDeployment implements Serializable {
         return jsonTestOutput
     }
 
+    public def publishFunction() {
+        def functionJSON = describeFunction()
+        String etag = getETag(functionJSON)
+
+        steps.sh script: """
+        aws cloudfront publish-function \
+        --name ${function} \
+        --if-match ${etag}
+        """
+    }
+
     private def describeFunction() {
         String textOutput = steps.sh script: "aws cloudfront describe-function --name ${function}", returnStdout: true
         def output = steps.readJSON text: textOutput
