@@ -3,14 +3,25 @@ package org.valcome
 class AWSCloudFrontFunctionDeployment implements Serializable {
     def steps
     String function
+    String codeFilePath
 
     AWSCloudFrontFunctionDeployment(steps = null,
-                                    function = null) {
+                                    function = null,
+                                    codeFilePath = null) {
         this.steps = steps
         this.function = function
+        this.codeFilePath = codeFilePath
     }
 
-    def uploadFunction(String functionCodeFilePath) {
+    public def deployWithTests(closure) {
+        uploadFunction(codeFilePath)
+
+        closure()
+
+        publishFunction()
+    }
+
+    public def uploadFunction() {
         def functionJSON = describeFunction()
         String etag = getETag(functionJSON)
         def functionConfig = getFunctionConfig(functionJSON)
@@ -19,12 +30,12 @@ class AWSCloudFrontFunctionDeployment implements Serializable {
         aws cloudfront update-function \
         --name ${function} \
         --if-match ${etag} \
-        --function-code fileb://${functionCodeFilePath} \
+        --function-code fileb://${codeFilePath} \
         --function-config '${functionConfig}'
         """
     }
 
-    def runTestEvent(String testEventFilePath) {
+    public def runTestEvent(String testEventFilePath) {
         def functionJSON = describeFunction()
         String etag = getETag(functionJSON)
 
