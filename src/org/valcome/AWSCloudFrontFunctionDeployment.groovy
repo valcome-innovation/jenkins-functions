@@ -14,7 +14,7 @@ class AWSCloudFrontFunctionDeployment implements Serializable {
     }
 
     public def deployWithTests(closure) {
-        uploadFunction(codeFilePath)
+        uploadFunction()
 
         closure()
 
