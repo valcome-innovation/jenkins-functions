@@ -44,7 +44,7 @@ class AWSCloudFrontFunctionDeployment implements Serializable {
     }
 
     private def describeFunction() {
-        String textOutput = steps.sh script: "aws cloudfront describe-function --name ${function}, returnStdout: true"
+        String textOutput = steps.sh script: "aws cloudfront describe-function --name ${function}", returnStdout: true
         def output = steps.readJSON text: textOutput
         return output
     }
