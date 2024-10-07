@@ -48,11 +48,11 @@ class AWSCloudFrontFunctionDeployment implements Serializable {
         return output
     }
 
-    private String getETag(JSONObject functionJSON) {
+    private String getETag(functionJSON) {
         return functionJSON.ETag
     }
 
-    private def getFunctionConfig(JSONObject functionJSON) {
+    private def getFunctionConfig(functionJSON) {
         return functionJSON.FunctionSummary.FunctionConfig.toString()
     }
 }
