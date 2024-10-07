@@ -18,7 +18,7 @@ class AWSCloudFrontFunctionDeployment implements Serializable {
         aws cloudfront update-function \
         --name ${function} \
         --if-match ${etag} \
-        --function-code fileb://${functionCodePath} \
+        --function-code fileb://${functionCodeFilePath} \
         --function-config '${functionConfig}'
         """
     }
@@ -34,8 +34,11 @@ class AWSCloudFrontFunctionDeployment implements Serializable {
         --stage DEVELOPMENT \
         --event-object fileb://${testEventFilePath} \
         """, returnStdout: true
+
         def jsonTestOutput = steps.readJSON text: jsonTextOutput
+
         assert jsonTestOutput.FunctionErrorMessage == ""
+
         return jsonTestOutput
     }
 
@@ -45,11 +48,11 @@ class AWSCloudFrontFunctionDeployment implements Serializable {
         return output
     }
 
-    private String getETag(functionJSON) {
+    private String getETag(JSONObject functionJSON) {
         return functionJSON.ETag
     }
 
-    private def getFunctionConfig(functionJSON) {
+    private def getFunctionConfig(JSONObject functionJSON) {
         return functionJSON.FunctionSummary.FunctionConfig.toString()
     }
 }
