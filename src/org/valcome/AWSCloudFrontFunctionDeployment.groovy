@@ -38,10 +38,9 @@ class AWSCloudFrontFunctionDeployment implements Serializable {
 
         def jsonTestOutput = steps.readJSON text: jsonTextOutput
 
-        steps.echo jsonTextOutput
-        assert jsonTestOutput.FunctionErrorMessage == ""
+        assert jsonTestOutput.TestResult.FunctionErrorMessage == ""
 
-        return jsonTestOutput
+        return jsonTestOutput.TestResult.FunctionOutput
     }
 
     public def publishFunction() {
