@@ -21,7 +21,7 @@ class AWSS3Deployment implements Serializable {
     def deploy(String srcBucket,
                String destBucket) {
         if (!checkVersionExists(srcBucket)) {
-            steps.error("Version doesn't exist at s3://${getSourceS3Path(srcBucket)}/")
+            steps.error "Version doesn't exist at s3://${getSourceS3Path(srcBucket)}/"
         }
 
         cleanDeploymentBucket(destBucket)
@@ -32,6 +32,7 @@ class AWSS3Deployment implements Serializable {
         def s3URI = getSourceS3Path(srcBucket)
         def listCommand = "aws s3 ls s3://${s3URI}/"
         def result = steps.sh script: "${listCommand}", returnStdout: true
+        steps.echo "Version check result: ${result}"
         return result != null && result?.trim() != ""
     }
 
