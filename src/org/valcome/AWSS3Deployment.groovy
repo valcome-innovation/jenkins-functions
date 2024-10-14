@@ -35,7 +35,7 @@ class AWSS3Deployment implements Serializable {
         try {
             def result = steps.sh script: "${listCommand}", returnStdout: true
             return result
-        } catch (AbortException e) {
+        } catch (e) {
             return false
         }
     }
