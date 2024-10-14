@@ -21,7 +21,7 @@ class AWSS3Deployment implements Serializable {
     def deploy(String srcBucket,
                String destBucket) {
         if (!checkVersionExists(srcBucket)) {
-            steps.error "Version doesn't exist at s3://${getSourceS3Path(srcBucket)}/"
+            steps.error("Version '${params.version}' does not exist")
         }
 
         cleanDeploymentBucket(destBucket)
