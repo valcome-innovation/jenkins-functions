@@ -67,7 +67,8 @@ class AWSS3Deployment implements Serializable {
         def command = """
         aws s3 cp \
         ${envFilePath}\
-        s3://${destBucket}/${envFilePath}
+        s3://${destBucket}/${envFilePath} \
+        --cache-control "no-cache"
         """
 
         steps.sh script: "${command}", returnStdout: true
