@@ -35,7 +35,8 @@ class AWSCloudFrontFunctionDeployment implements Serializable {
         """
     }
 
-    public def runTestEvent(String testEventFilePath) {
+    public def runTestEvent(String testEventFilePath,
+                            Boolean verbose = false) {
         def functionJSON = describeFunction()
         String etag = getETag(functionJSON)
 
@@ -46,6 +47,10 @@ class AWSCloudFrontFunctionDeployment implements Serializable {
         --stage DEVELOPMENT \
         --event-object fileb://${testEventFilePath} \
         """, returnStdout: true
+
+        if (verbose) {
+            steps.echo jsonTextOutput
+        }
 
         def jsonTestOutput = steps.readJSON text: jsonTextOutput
 
