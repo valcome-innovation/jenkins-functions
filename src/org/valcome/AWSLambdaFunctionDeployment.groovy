@@ -22,10 +22,15 @@ class AWSLambdaFunctionDeployment implements Serializable {
     }
 
     public def updateFunction() {
+        steps.zip zipFile: "code.zip", \
+                archive: false, \
+                dir: "${codeFilePath}/..", \
+                file: "index.mjs"
+
         steps.sh script: """
         aws lambda update-function-code \
         --function-name ${function} \
-        --zip-file fileb://${codeFilePath}
+        --zip-file fileb://code.zip
         """
     }
 
