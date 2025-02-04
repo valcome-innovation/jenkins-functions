@@ -44,7 +44,7 @@ class AWSLambdaFunctionDeployment implements Serializable {
         test-output.json
         """
 
-        def testOutputJSON = steps.readJSON 'test-output.json'
+        def testOutputJSON = steps.readJSON file: 'test-output.json'
         return testOutputJSON
     }
 
