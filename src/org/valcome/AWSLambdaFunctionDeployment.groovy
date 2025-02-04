@@ -39,6 +39,7 @@ class AWSLambdaFunctionDeployment implements Serializable {
         aws lambda invoke \
         --function-name ${function} \
         --payload file://${testEventFilePath} \
+        --cli-binary-format raw-in-base64-out \
         test-output.json
         """, returnStdout: true
 
