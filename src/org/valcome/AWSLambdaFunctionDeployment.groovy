@@ -39,6 +39,7 @@ class AWSLambdaFunctionDeployment implements Serializable {
         aws lambda invoke \
         --function-name ${function} \
         --payload file://${testEventFilePath} \
+        test-output.json
         """, returnStdout: true
 
         def jsonTestOutput = steps.readJSON text: jsonTextOutput
