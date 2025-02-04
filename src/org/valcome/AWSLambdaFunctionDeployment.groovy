@@ -45,7 +45,7 @@ class AWSLambdaFunctionDeployment implements Serializable {
         """, returnStdout: true
 
         steps.sh "cat test-output.json"
-        steps.sh "cat ${jsonTextOutput}"
+        steps.sh "echo ${jsonTextOutput}"
 
         def jsonTestOutput = steps.readJSON file: 'test-output.json'
         return jsonTestOutput
