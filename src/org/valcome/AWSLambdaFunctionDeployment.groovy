@@ -40,6 +40,7 @@ class AWSLambdaFunctionDeployment implements Serializable {
         --function-name ${function} \
         --payload file://${testEventFilePath} \
         --cli-binary-format raw-in-base64-out \
+        --output json \
         test-output.json
         """, returnStdout: true
 
