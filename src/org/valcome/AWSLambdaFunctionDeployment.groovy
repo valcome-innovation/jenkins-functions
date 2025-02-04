@@ -35,18 +35,16 @@ class AWSLambdaFunctionDeployment implements Serializable {
     }
 
     public def runTestEvent(String testEventFilePath) {
-        String jsonTextOutput = steps.sh script: """
+        steps.sh script: """
         aws lambda invoke \
         --function-name ${function} \
         --payload file://${testEventFilePath} \
         --cli-binary-format raw-in-base64-out \
         --output json \
         test-output.json
-        """, returnStdout: true
+        """
 
-        steps.sh "echo '${jsonTextOutput}'"
-
-        def jsonTestOutput = steps.readJSON text: jsonTextOutput
+        def jsonTestOutput = steps.readJSON file: 'test-output.json'
         return jsonTestOutput
     }
 
