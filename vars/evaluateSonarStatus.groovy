@@ -3,7 +3,8 @@ def call(String projectName) {
         string(credentialsId: 'SONAR_TOKEN', variable: 'SONAR_TOKEN')
     ]) {
         def authHeader = 'Authorization: Bearer $SONAR_TOKEN'
-        String response = sh script: 'curl -sS -H "{$authHeader}" "https://sonar.valcome.dev/api/qualitygates/project_status?projectKey=${projectName}"',
+        def curl = "curl -sS -H $authHeader https://sonar.valcome.dev/api/qualitygates/project_status?projectKey=$projectName"
+        String response = sh script: "$curl",
                 returnStdout: true
         sh "echo $response"
 
