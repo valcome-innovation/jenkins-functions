@@ -11,7 +11,7 @@ def call(String projectName) {
         def sonarStatus = responseJSON.projectStatus.status
         echo "SONAR analysis status is: $sonarStatus"
 
-        if (responseJSON.projectStatus.status != "ERROR") {
+        if (responseJSON.projectStatus.status == "ERROR") {
             def detailsUrl = "https://sonar.valcome.dev/dashboard?id=$projectName"
             publishGithubCheck(
                     "Sonar",
