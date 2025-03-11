@@ -5,6 +5,8 @@ def call(String projectName) {
         def authHeader = 'Authorization: Bearer $SONAR_TOKEN'
         String response = sh script: 'curl -sS -H "{$authHeader}" "https://sonar.valcome.dev/api/qualitygates/project_status?projectKey=${projectName}"',
                 returnStdout: true
+        sh "echo $response"
+
         def responseJSON = readJSON text: response
 
         if (responseJSON.projectStatus.status == "ERROR") {
