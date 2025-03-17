@@ -1,7 +1,5 @@
 package org.valcome
 
-import org.valcome.evaluateSonarStatus
-
 class AWSCodebuildBatch implements Serializable {
     def buildParams
     def steps
