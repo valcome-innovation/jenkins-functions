@@ -1,5 +1,7 @@
 package org.valcome
 
+import org.valcome.evaluateSonarStatus
+
 class AWSCodebuildBatch implements Serializable {
     def buildParams
     def steps
@@ -78,7 +80,7 @@ class AWSCodebuildBatch implements Serializable {
         updateBuildResult(endStatus)
 
         if (!buildParams.skipSonar) {
-            evaluateSonarStatus(buildParams.project)
+            steps.evaluateSonarStatus(buildParams.project)
         }
 
         steps.echo "Build Finished: ${steps.currentBuild.result}"
