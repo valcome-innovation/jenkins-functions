@@ -77,6 +77,10 @@ class AWSCodebuildBatch implements Serializable {
         def endStatus = runningBatch.buildBatchStatus
         updateBuildResult(endStatus)
 
+        if (!buildParams.skipSonar) {
+            evaluateSonarStatus(buildParams.project)
+        }
+
         steps.echo "Build Finished: ${steps.currentBuild.result}"
     }
 
