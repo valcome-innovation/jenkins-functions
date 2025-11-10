@@ -15,14 +15,14 @@ class AWSCodebuildBatch implements Serializable {
                       skipPublish = false) {
         this.steps = steps
         this.buildParams = [
-            project: project,
-            branch: branch,
-            version: version,
-            app: app,
-            environment: environment,
-            skipTests: skipTests,
-            skipSonar: skipSonar,
-            skipPublish: skipPublish
+                project    : project,
+                branch     : branch,
+                version    : version,
+                app        : app,
+                environment: environment,
+                skipTests  : skipTests,
+                skipSonar  : skipSonar,
+                skipPublish: skipPublish
         ]
     }
 
@@ -37,7 +37,7 @@ class AWSCodebuildBatch implements Serializable {
         --project-name ${buildParams.project} \
         --source-version ${buildParams.branch} \
         --environment-variables-override \
-        name=TAG,value=${buildParams.version} """
+        name=TAG,value=${normalizeDockerTag(buildParams.version)} """
 
         if (buildParams.app != null) {
             customCommand += " name=APP,value=${buildParams.app} "
@@ -96,25 +96,25 @@ class AWSCodebuildBatch implements Serializable {
     def reportBuildStatus(runningBatch) {
         // maps codebuild state to github status
         def statusMap = [
-            PENDING: "QUEUED",
-            FAILED: "COMPLETED",
-            FAULT: "COMPLETED",
-            IN_PROGRESS: "IN_PROGRESS",
-            STOPPED: "COMPLETED",
-            SUCCEEDED: "COMPLETED",
-            TIMED_OUT: "COMPLETED",
-            SKIPPED: "COMPLETED"
+                PENDING    : "QUEUED",
+                FAILED     : "COMPLETED",
+                FAULT      : "COMPLETED",
+                IN_PROGRESS: "IN_PROGRESS",
+                STOPPED    : "COMPLETED",
+                SUCCEEDED  : "COMPLETED",
+                TIMED_OUT  : "COMPLETED",
+                SKIPPED    : "COMPLETED"
         ]
 
         def conclusionMap = [
-            PENDING: "NONE",
-            IN_PROGRESS: "NONE",
-            STOPPED: "CANCELED",
-            FAILED: "FAILURE",
-            FAULT: "FAILURE",
-            SUCCEEDED: "SUCCESS",
-            TIMED_OUT: "TIME_OUT",
-            SKIPPED: "NEUTRAL"
+                PENDING    : "NONE",
+                IN_PROGRESS: "NONE",
+                STOPPED    : "CANCELED",
+                FAILED     : "FAILURE",
+                FAULT      : "FAILURE",
+                SUCCEEDED  : "SUCCESS",
+                TIMED_OUT  : "TIME_OUT",
+                SKIPPED    : "NEUTRAL"
         ]
 
         def buildGroups = runningBatch.buildGroups
@@ -144,8 +144,8 @@ class AWSCodebuildBatch implements Serializable {
     boolean isSkipped(buildStep) {
         def title = buildStep.identifier.toLowerCase()
         return (title.contains('test') && buildParams.skipTests) ||
-               (title.contains('sonar') && buildParams.skipSonar) ||
-               (title.contains('publish') && buildParams.skipPublish)
+                (title.contains('sonar') && buildParams.skipSonar) ||
+                (title.contains('publish') && buildParams.skipPublish)
     }
 
     boolean isPullRequest() {
@@ -181,5 +181,17 @@ class AWSCodebuildBatch implements Serializable {
         } else {
             steps.currentBuild.result = 'SUCCESS'
         }
+    }
+
+    def normalizeDockerTag(String value) {
+        // replace anything illegal with '-'
+        def tag = value.replaceAll(/[^A-Za-z0-9_.-]/, '-')
+
+        // Docker tag length limit
+        if (tag.length() > 128) {
+            tag = tag.substring(0, 128)
+        }
+
+        return tag
     }
 }
