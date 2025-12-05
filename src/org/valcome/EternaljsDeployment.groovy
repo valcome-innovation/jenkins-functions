@@ -45,10 +45,10 @@ class EternaljsDeployment implements Serializable {
                 ]
     }
 
-    def deployDatabase() {
+    def deployUnit(String unit) {
         String base64Content = this.getBase64Config()
 
-        steps.build job: 'eternal.js/db/deploy',
+        steps.build job: "eternal.js/${unit}/deploy",
                 parameters: [
                         steps.string(name: 'HOST', value: null),
                         steps.string(name: 'SSH', value: null),

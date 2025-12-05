@@ -50,9 +50,9 @@ class EternaljsDeploymentConfig implements Serializable {
     }
 
     def getDatabaseDeploymentConfig(String app) {
-        return this.getDatabaseConfig(app).deployment.collectEntries { key, value ->
-            [(key.toString().toUpperCase()): value]
-        }
+        def config = this.getDatabaseConfig(app).deployment
+
+        return toConfigMap(config)
     }
 
     def getServices() {
@@ -68,9 +68,9 @@ class EternaljsDeploymentConfig implements Serializable {
     }
 
     def getServiceDeploymentConfig(String app) {
-        return this.getServiceConfig(app).deployment.collectEntries { key, value ->
-            [(key.toString().toUpperCase()): value]
-        }
+        def config = this.getServiceConfig(app).deployment
+
+        return toConfigMap(config)
     }
 
     def getServiceEnvVersions(String app) {
@@ -87,5 +87,11 @@ class EternaljsDeploymentConfig implements Serializable {
 
     String getSSHHost() {
         return this.eternaljs().ssh.host
+    }
+
+    static Map toConfigMap(config) {
+        return config.collectEntries { key, value ->
+            [(key.toString().toUpperCase()): value]
+        }
     }
 }
