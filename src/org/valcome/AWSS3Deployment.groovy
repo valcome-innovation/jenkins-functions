@@ -24,8 +24,19 @@ class AWSS3Deployment implements Serializable {
             steps.error("Version '${params.version}' does not exist")
         }
 
-        cleanDeploymentBucket(destBucket)
-        copyNewVersion(srcBucket, destBucket)
+        syncVersion(srcBucket, destBucket)
+    }
+
+    def syncVersion(String srcBucket, String destBucket) {
+        def deployCommand = """
+          aws s3 sync \
+            s3://${getSourceS3Path(srcBucket)} \
+            s3://${destBucket}/ \
+            --delete \
+            --only-show-errors \
+            --no-progress
+        """
+        steps.sh(script: deployCommand)
     }
 
     def checkVersionExists(String srcBucket) {
