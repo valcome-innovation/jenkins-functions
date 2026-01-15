@@ -36,7 +36,7 @@ class AWSS3Deployment implements Serializable {
             --only-show-errors \
             --no-progress
         """
-        steps.sh(script: deployCommand)
+        steps.sh script: "${deployCommand}", returnStdout: true
     }
 
     def checkVersionExists(String srcBucket) {
