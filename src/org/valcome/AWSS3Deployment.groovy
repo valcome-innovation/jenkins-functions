@@ -33,6 +33,7 @@ class AWSS3Deployment implements Serializable {
             s3://${getSourceS3Path(srcBucket)} \
             s3://${destBucket}/ \
             --delete \
+            --exclude "*/env.json" \
             --only-show-errors \
             --no-progress
         """
